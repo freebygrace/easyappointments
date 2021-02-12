@@ -1,10 +1,10 @@
 <html lang="en">
 <head>
-    <title><?= lang('appointment_cancelled_title') ?> | Easy!Appointments</title>
+    <title><?= lang('appointment_cancelled_title') ?> | CWALC Scheduler</title>
 </head>
 <body style="font: 13px arial, helvetica, tahoma;">
 <div class="email-container" style="width: 650px; border: 1px solid #eee;">
-    <div id="header" style="background-color: #429a82; height: 45px; padding: 10px 15px;">
+    <div id="header" style="background-color: #94dac0; height: 45px; padding: 10px 15px;">
         <strong id="logo" style="color: white; font-size: 20px; margin-top: 10px; display: inline-block">
             <?= $company_name ?>
         </strong>
@@ -16,6 +16,7 @@
 
         <h2><?= lang('appointment_details_title') ?></h2>
         <table id="appointment-details">
+			<!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('service') ?></td>
                 <td style="padding: 3px;"><?= $appointment_service ?></td>
@@ -36,6 +37,13 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('timezone') ?></td>
                 <td style="padding: 3px;"><?= $appointment_timezone ?></td>
             </tr>
+			-->
+			<!-- MCY - added -->
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;">Passengers</td>
+                <td style="padding: 3px;">$appointment_notes</td>
+            </tr>
+			<!-- MCY - end of added -->
         </table>
 
         <h2><?= lang('customer_details_title') ?></h2>

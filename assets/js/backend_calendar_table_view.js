@@ -941,9 +941,13 @@ window.BackendCalendarTableView = window.BackendCalendarTableView || {};
 
             calendarEvents.push({
                 id: appointment.id,
-                title: appointment.service.name + ' - '
+                // MCY - changed
+                //title: appointment.service.name + ' - '
+                title: ((appointment.notes) ? EALang.confirmed : EALang.pending) + ' - '
                     + appointment.customer.first_name + ' '
-                    + appointment.customer.last_name,
+                    + appointment.customer.last_name
+                    + ((appointment.notes) ? (' - ' + appointment.notes) : ''),
+                // MCY - end of changed
                 start: moment(appointment.start_datetime),
                 end: moment(appointment.end_datetime),
                 allDay: false,

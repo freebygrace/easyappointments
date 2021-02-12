@@ -130,7 +130,10 @@ window.FrontendBook = window.FrontendBook || {};
             }
         });
 
-        $('#select-timezone').val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        // MCY - changed
+        //$('#select-timezone').val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        $('#select-timezone').val(GlobalVariables.user.timezone);
+        // MCY - end of changed
 
         // Bind the event handlers (might not be necessary every time we use this class).
         if (defaultEventHandlers) {
@@ -560,13 +563,18 @@ window.FrontendBook = window.FrontendBook || {};
             .appendTo('#appointment-details');
 
         // Customer Details
-        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var email = GeneralFunctions.escapeHtml($('#email').val());
-        var address = GeneralFunctions.escapeHtml($('#address').val());
-        var city = GeneralFunctions.escapeHtml($('#city').val());
-        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
+        // MCY - changed - pilot is currently logged in user
+        //var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
+        //var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
+        //var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
+        //var email = GeneralFunctions.escapeHtml($('#email').val());
+        //var address = GeneralFunctions.escapeHtml($('#address').val());
+        //var city = GeneralFunctions.escapeHtml($('#city').val());
+        //var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
+        var displayName = GlobalVariables.user.display_name;
+        var phoneNumber = GlobalVariables.user.phone_number;
+        var email = GlobalVariables.user.email;
+        // MCY - end of changed
 
         $('#customer-details').empty();
 
@@ -578,7 +586,10 @@ window.FrontendBook = window.FrontendBook || {};
                 $('<p/>', {
                     'html': [
                         $('<span/>', {
-                            'text': EALang.customer + ': ' + firstName + ' ' + lastName
+                            // MCY - changed
+                            //'text': EALang.customer + ': ' + firstName + ' ' + lastName
+                            'text': EALang.customer + ': ' + displayName
+                            // MCY - end of changed
                         }),
                         $('<br/>'),
                         $('<span/>', {
@@ -589,6 +600,7 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': EALang.email + ': ' + email
                         }),
                         $('<br/>'),
+                        /** MCY - removed - no need to display other pilot information
                         $('<span/>', {
                             'text': address ? EALang.address + ': ' + address : ''
                         }),
@@ -601,6 +613,7 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': zipCode ? EALang.zip_code + ': ' + zipCode : ''
                         }),
                         $('<br/>'),
+                        MCY - end of removed **/
                     ]
                 })
             ]
@@ -612,6 +625,7 @@ window.FrontendBook = window.FrontendBook || {};
         var data = {};
 
         data.customer = {
+            /** MCY - removed - use currently logged in pilot
             last_name: $('#last-name').val(),
             first_name: $('#first-name').val(),
             email: $('#email').val(),
@@ -620,6 +634,10 @@ window.FrontendBook = window.FrontendBook || {};
             city: $('#city').val(),
             zip_code: $('#zip-code').val(),
             timezone: $('#select-timezone').val()
+            MCY - end of removed */
+            // MCY - added
+            id: GlobalVariables.user.id
+            // MCY - end of added
         };
 
         data.appointment = {
@@ -726,6 +744,10 @@ window.FrontendBook = window.FrontendBook || {};
         var $serviceDescription = $('#service-description');
 
         $serviceDescription.empty();
+        
+        // MCY - changed - don't display
+        return;
+		// MCY - end of changed
 
         var service = GlobalVariables.availableServices.find(function (availableService) {
             return Number(availableService.id) === Number(serviceId);

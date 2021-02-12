@@ -325,7 +325,11 @@
             .val('')
             .prop('disabled', true);
         $('#secretaries .record-details #secretary-calendar-view').val('default');
-        $('#secretaries .record-details #secretary-timezone').val('UTC');
+        // MCY - changed
+        //$('#secretaries .record-details #secretary-timezone').val('UTC');
+        $('#secretaries .record-details #secretary-timezone').val(GlobalVariables.defaultTimezone);
+        $('#secretaries .record-details #secretary-timezone').prop('disabled', true);
+        // MCY - end of changed
         $('#secretaries .add-edit-delete-group').show();
         $('#secretaries .save-cancel-group').hide();
         $('#edit-secretary, #delete-secretary').prop('disabled', true);

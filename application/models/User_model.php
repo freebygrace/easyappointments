@@ -160,6 +160,29 @@ class User_model extends EA_Model {
         return $user['first_name'] . ' ' . $user['last_name'];
     }
 
+	// MCY - added
+    /**
+     * Get the given user's phone number (cell number preferred)
+     *
+     * @param int $user_id The given user record id.
+     *
+     * @return string Returns the user's phone number.
+     *
+     * @throws Exception If $user_id argument is invalid.
+     */
+    public function get_user_phone_number($user_id)
+    {
+        if ( ! is_numeric($user_id))
+        {
+            throw new Exception ('Invalid argument given: ' . $user_id);
+        }
+
+        $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+		
+		return empty($user['mobile_number']) ? $user['phone_number'] : $user['mobile_number'];
+    }
+	// MCY - end of added
+
     /**
      * If the given arguments correspond to an existing user record, generate a new
      * password and send it with an email.

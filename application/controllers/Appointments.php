@@ -24,6 +24,10 @@ class Appointments extends EA_Controller {
     {
         parent::__construct();
 
+		// MCY - added - may need to force a login
+        $this->load->library('session');
+        // MCY - end of added
+        
         $this->load->helper('installation');
         $this->load->helper('google_analytics');
         $this->load->model('appointments_model');
@@ -33,6 +37,12 @@ class Appointments extends EA_Controller {
         $this->load->model('services_model');
         $this->load->model('customers_model');
         $this->load->model('settings_model');
+        
+        // MCY - added
+        $this->load->model('roles_model');
+        $this->load->model('user_model');
+        // MCY - end of added
+
         $this->load->library('timezones');
         $this->load->library('synchronization');
         $this->load->library('notifications');
@@ -57,9 +67,35 @@ class Appointments extends EA_Controller {
                 redirect('installation/index');
                 return;
             }
+        
+        	// MCY - added - force login
+        	$this->session->set_userdata('dest_url', site_url(''));
+
+        	if ( ! $this->_has_privileges(PRIV_APPOINTMENTS))
+        	{
+            	return;
+        	}
+			// MCY - end of added
+		
+			// MCY - added - must be a pilot to book an appointment
+        	if ($this->session->userdata('role_slug') !== DB_SLUG_CUSTOMER)
+			{
+            	redirect('backend/index');
+            	return;
+			}
+			// MCY - end of must be a  pilot
+			
+			// MCY - added
+        	$userId = $this->session->userdata('user_id');
+			// MCY - end of added
 
             $available_services = $this->services_model->get_available_services();
-            $available_providers = $this->providers_model->get_available_providers();
+
+			// MCY - changed - pilots have locations where they can serve
+            // $available_providers = $this->providers_model->get_available_providers();
+            $customer_providers = $this->customers_model->get_row($userId)['providers'];
+			$available_providers = $this->providers_model->get_batch("id IN (" . implode(", ", $customer_providers) . ")");
+			// MCY - end of changed
             $company_name = $this->settings_model->get_setting('company_name');
             $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
             $date_format = $this->settings_model->get_setting('date_format');
@@ -175,6 +211,10 @@ class Appointments extends EA_Controller {
                 'timezones' => $timezones,
                 'display_any_provider' => $display_any_provider,
             ];
+			
+			// MCY - added
+			$this->set_user_data($variables);
+			// MCY - end of added
         }
         catch (Exception $exception)
         {
@@ -458,10 +498,17 @@ class Appointments extends EA_Controller {
                 return;
             }
 
+			/** MCY - removed - the customer (pilot) is the logged in user
             if ($this->customers_model->exists($customer))
             {
                 $customer['id'] = $this->customers_model->find_record_id($customer);
             }
+        	MCY - end of removed */
+        	
+        	// MCY - added - get currently logged in customer
+			$customer = $this->customers_model->get_row($customer['id']);
+			$customer_id = $customer['id'];
+			// MCY - end of added
 
             if (empty($appointment['location']) && ! empty($service['location']))
             {
@@ -674,5 +721,72 @@ class Appointments extends EA_Controller {
         return $provider_list;
     }
 
+	// MCY - added
+	/**
+     * Check whether current user is logged in and has the required privileges to create an appointment.
+     *
+     * The appointment page requires different that the user have the privilege for creating appointments.
+     *
+     * see Constant definition in application/config/constants.php.
+     *
+     * @param string $page This argument must match the roles field names of each section (eg "appointments", "users"
+     * ...).
+     * @param bool $redirect If the user has not the required privileges (either not logged in or insufficient role
+     * privileges) then the user will be redirected to another page. Set this argument to FALSE when using ajax (default
+     * true).
+     *
+     * @return bool Returns whether the user has the required privileges to view the page or not. If the user is not
+     * logged in then he will be prompted to log in. If he hasn't the required privileges then an info message will be
+     * displayed.
+     */
+    protected function _has_privileges($page, $redirect = TRUE)
+    {
+        // Check if user is logged in.
+        $user_id = $this->session->userdata('user_id');
+        if ($user_id == FALSE)
+        { // User not logged in, display the login view.
+            if ($redirect)
+            {
+                header('Location: ' . site_url('user/login'));
+            }
+            return FALSE;
+        }
 
+        // Check if the user has the required privileges for viewing the selected page.
+        $role_slug = $this->session->userdata('role_slug');
+        $role_priv = $this->db->get_where('roles', ['slug' => $role_slug])->row_array();
+        if ($role_priv[$page] < PRIV_VIEW)
+        { // User does not have the permission to view the page.
+            if ($redirect)
+            {
+                header('Location: ' . site_url('user/no_privileges'));
+            }
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+	// MCY - end of added
+	
+	// MCY - added
+	/**
+     * Set the user data in order to be available at the view and js code.
+     *
+     * @param array $variables Contains the variables.
+    */
+    protected function set_user_data(&$variables)
+    {
+        $this->load->model('user_model');
+        $this->load->model('roles_model');
+
+        // Get user data
+        $variables['user_id'] = $this->session->userdata('user_id');
+        $variables['user_display_name'] = $this->user_model->get_user_display_name($variables['user_id']);
+        $variables['user_phone_number'] = $this->user_model->get_user_phone_number($variables['user_id']);
+        $variables['user_email'] = $this->session->userdata('user_email');
+        $variables['user_timezone'] = $this->session->userdata('timezone');
+        $variables['role_slug'] = $this->session->userdata('role_slug');
+        $variables['privileges'] = $this->roles_model->get_privileges($this->session->userdata('role_slug'));
+    }
+	// MCY - end of added
 }

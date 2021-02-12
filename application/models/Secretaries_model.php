@@ -16,6 +16,22 @@
  *
  * Handles the db actions that have to do with secretaries.
  *
+ * Data Structure:
+ *
+ *  'first_name'
+ *  'last_name'
+ *  'email'
+ *  'mobile_number'
+ *  'phone_number'
+ *  'address'
+ *  'city'
+ *  'state'
+ *  'zip_code'
+ *  'notes'
+ *  'id_roles'
+ *  'providers' >> array with provider ids that the secretary handles
+ *  'settings' >> array with the secretary settings
+ *
  * @package Models
  */
 class Secretaries_model extends EA_Model {
@@ -532,6 +548,12 @@ class Secretaries_model extends EA_Model {
         {
             $this->db->order_by($order_by);
         }
+		// MCY - added
+		else
+		{
+			$this->db->order_by('users.first_name');
+		}
+		// MCY - end of added
 
         $batch = $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
 
@@ -569,4 +591,45 @@ class Secretaries_model extends EA_Model {
             ['id_users' => $secretary_id])->row_array();
         return $provider_settings[$setting_name];
     }
+
+	// MCY - added
+	/**
+     * Get all secretary records that serve a given provider from database.
+     *
+     * @param int $provider_id The provider record id.
+     *
+     * @return array Returns an array with secretary records.
+     */
+    public function get_provider_secretaries($provider_id)
+    {
+        $role_id = $this->get_secretary_role_id();
+
+        $batch = $this->db
+            ->select('*')
+            ->from('users')
+            ->join('secretaries_providers', 'users.id = secretaries_providers.id_users_secretary', 'inner')
+			->where('id_roles', $role_id)
+			->where('secretaries_providers.id_users_provider', $provider_id)
+			->get()->result_array();
+
+        // Include every secretary providers.
+        foreach ($batch as &$secretary)
+        {
+            $secretary_providers = $this->db->get_where('secretaries_providers',
+                ['id_users_secretary' => $secretary['id']])->result_array();
+
+            $secretary['providers'] = [];
+            foreach ($secretary_providers as $secretary_provider)
+            {
+                $secretary['providers'][] = $secretary_provider['id_users_provider'];
+            }
+
+            $secretary['settings'] = $this->db->get_where('user_settings',
+                ['id_users' => $secretary['id']])->row_array();
+            unset($secretary['settings']['id_users']);
+        }
+
+        return $batch;
+    }
+	// MCY - end of added
 }

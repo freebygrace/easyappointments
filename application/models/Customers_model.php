@@ -14,6 +14,26 @@
 /**
  * Customers Model
  *
+ * MCY - added
+ * Handles the db actions that have to do with customers.
+ *
+ * Data Structure:
+ *
+ *  'first_name'
+ *  'last_name'
+ *  'email'
+ *  'mobile_number'
+ *  'phone_number'
+ *  'address'
+ *  'city'
+ *  'state'
+ *  'zip_code'
+ *  'notes'
+ *  'id_roles'
+ *  'providers' >> array with location ids where the pilot volunteers
+ *  'settings' >> array with the pilot settings
+ * MCY - end of added
+ *
  * @package Models
  */
 class Customers_model extends EA_Model {
@@ -87,6 +107,13 @@ class Customers_model extends EA_Model {
         }
 
         $phone_number_required = $this->db->get_where('settings', ['name' => 'require_phone_number'])->row()->value === '1';
+		// MCY - added
+        // Validate 'providers' value data type (must be array)
+        if (isset($customer['providers']) && ! is_array($customer['providers']))
+        {
+            throw new Exception('Customer providers value is not an array.');
+        }
+		// MCY - end of added
 
         // Validate required fields
         if ( ! isset(
@@ -104,6 +131,37 @@ class Customers_model extends EA_Model {
         {
             throw new Exception('Invalid email address provided: ' . $customer['email']);
         }
+    
+    	// MCY - added
+        // Check if username exists.
+        if (isset($customer['settings']['username']))
+        {
+            $user_id = (isset($customer['id'])) ? $customer['id'] : '';
+            if ( ! $this->validate_username($customer['settings']['username'], $user_id))
+            {
+                throw new Exception ('Username already exists. Please select a different '
+                    . 'username for this record.');
+            }
+        }
+
+        // Validate customer password.
+        if (isset($customer['settings']['password']))
+        {
+            if (strlen($customer['settings']['password']) < MIN_PASSWORD_LENGTH)
+            {
+                throw new Exception('The user password must be at least '
+                    . MIN_PASSWORD_LENGTH . ' characters long.');
+            }
+        }
+
+        // Validate calendar view mode. 
+        if (isset($customer['settings']['calendar_view']) && ($customer['settings']['calendar_view'] !== CALENDAR_VIEW_DEFAULT
+                && $customer['settings']['calendar_view'] !== CALENDAR_VIEW_TABLE))
+        {
+            throw new Exception('The calendar view setting must be either "' . CALENDAR_VIEW_DEFAULT
+                . '" or "' . CALENDAR_VIEW_TABLE . '", given: ' . $customer['settings']['calendar_view']);
+        }
+		// MCY - end of added
 
         // When inserting a record the email address must be unique.
         $customer_id = isset($customer['id']) ? $customer['id'] : '';
@@ -210,6 +268,15 @@ class Customers_model extends EA_Model {
      */
     protected function insert($customer)
     {
+		// MCY - added
+        $this->load->helper('general');
+		
+        $providers = $customer['providers'];
+        unset($customer['providers']);
+        $settings = $customer['settings'];
+        unset($customer['settings']);
+		/** MCY - end of added */
+
         // Before inserting the customer we need to get the customer's role id
         // from the database and assign it to the new record as a foreign key.
         $customer_role_id = $this->db
@@ -224,8 +291,18 @@ class Customers_model extends EA_Model {
         {
             throw new Exception('Could not insert customer to the database.');
         }
+		// MCY - changed
+        //return (int)$this->db->insert_id();
 
-        return (int)$this->db->insert_id();
+        $customer['id'] = (int)$this->db->insert_id();
+        $settings['salt'] = generate_salt();
+        $settings['password'] = hash_password($settings['salt'], $settings['password']);
+
+        $this->save_providers($providers, $customer['id']);
+        $this->save_settings($settings, $customer['id']);
+
+        return $customer['id'];
+		// MCY - end of added
     }
 
     /**
@@ -242,12 +319,32 @@ class Customers_model extends EA_Model {
      */
     protected function update($customer)
     {
+		// MCY - added
+        $this->load->helper('general');
+
+        $providers = $customer['providers'];
+        unset($customer['providers']);
+        $settings = $customer['settings'];
+        unset($customer['settings']);
+
+        if (isset($settings['password']))
+        {
+            $salt = $this->db->get_where('user_settings', ['id_users' => $customer['id']])->row()->salt;
+            $settings['password'] = hash_password($salt, $settings['password']);
+        }
+		// MCY - end of added
+
         $this->db->where('id', $customer['id']);
 
         if ( ! $this->db->update('users', $customer))
         {
             throw new Exception('Could not update customer to the database.');
         }
+    
+    	// MCY - added
+        $this->save_providers($providers, $customer['id']);
+		$this->save_settings($settings, $customer['id']);
+		// MCY - end of added
 
         return (int)$customer['id'];
     }
@@ -293,7 +390,26 @@ class Customers_model extends EA_Model {
         {
             throw new Exception('Invalid argument provided as $customer_id : ' . $customer_id);
         }
-        return $this->db->get_where('users', ['id' => $customer_id])->row_array();
+    
+    	// MCY - changed
+        //return $this->db->get_where('users', ['id' => $customer_id])->row_array();
+
+        $customer = $this->db->get_where('users', ['id' => $customer_id])->row_array();
+
+        $customer_providers = $this->db->get_where('secretaries_providers',
+            ['id_users_secretary' => $customer['id']])->result_array();
+        $customer['providers'] = [];
+        foreach ($customer_providers as $customer_provider)
+        {
+            $customer['providers'][] = $customer_provider['id_users_provider'];
+        }
+
+        $customer['settings'] = $this->db->get_where('user_settings',
+            ['id_users' => $customer['id']])->row_array();
+        unset($customer['settings']['id_users'], $customer['settings']['salt']);
+
+        return $customer;
+		// MCY - end of changed
     }
 
     /**
@@ -369,8 +485,39 @@ class Customers_model extends EA_Model {
         {
             $this->db->order_by($order_by);
         }
+    	// MCY - added
+    	else
+    	{
+			$this->db->order_by('users.first_name');
+    	}
+    	// MCY - end of added
+		
+		$this->db->where('id_roles', $role_id);
 
-        return $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
+		// MCY - changed
+        //return $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
+
+        $batch = $this->db->get('users')->result_array();
+
+        // Include every customer settings.
+        foreach ($batch as &$customer)
+        {
+            $customer_providers = $this->db->get_where('secretaries_providers',
+                ['id_users_secretary' => $customer['id']])->result_array();
+
+            $customer['providers'] = [];
+            foreach ($customer_providers as $customer_provider)
+            {
+                $customer['providers'][] = $customer_provider['id_users_provider'];
+            }
+
+            $customer['settings'] = $this->db->get_where('user_settings',
+                ['id_users' => $customer['id']])->row_array();
+            unset($customer['settings']['id_users']);
+        }
+
+        return $batch;
+		// MCY - end of changed
     }
 
     /**
@@ -382,4 +529,116 @@ class Customers_model extends EA_Model {
     {
         return $this->db->get_where('roles', ['slug' => DB_SLUG_CUSTOMER])->row()->id;
     }
+	
+	// MCY - added
+	/**
+     * Save a the locations where the pilot can volunteer.
+     *
+     * @param array $providers Contains the location ids where the pilot can volunteer.
+     * @param int $customer_id The selected secretary record.
+     *
+     * @throws Exception If $providers argument is invalid.
+     */
+    protected function save_providers($providers, $customer_id)
+    {
+        if ( ! is_array($providers))
+        {
+            throw new Exception('Invalid argument given $providers: ' . print_r($providers, TRUE));
+        }
+
+        // Delete old connections
+        $this->db->delete('secretaries_providers', ['id_users_secretary' => $customer_id]);
+
+        if (count($providers) > 0)
+        {
+            foreach ($providers as $provider_id)
+            {
+                $this->db->insert('secretaries_providers', [
+                    'id_users_secretary' => $customer_id,
+                    'id_users_provider' => $provider_id
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Save the customer settings (used from insert or update operation).
+     *
+     * @param array $settings Contains the setting values.
+     * @param int $customer_id Record id of the customer.
+     *
+     * @throws Exception If $customer_id argument is invalid.
+     * @throws Exception If $settings argument is invalid.
+     */
+    protected function save_settings($settings, $customer_id)
+    {
+        if ( ! is_numeric($customer_id))
+        {
+            throw new Exception('Invalid $customer_id argument given:' . $customer_id);
+        }
+
+        if (count($settings) == 0 || ! is_array($settings))
+        {
+            throw new Exception('Invalid $settings argument given:' . print_r($settings, TRUE));
+        }
+
+        // Check if the setting record exists in db.
+        $num_rows = $this->db->get_where('user_settings',
+            ['id_users' => $customer_id])->num_rows();
+        if ($num_rows == 0)
+        {
+            $this->db->insert('user_settings', ['id_users' => $customer_id]);
+        }
+
+        foreach ($settings as $name => $value)
+        {
+            $this->set_setting($name, $value, $customer_id);
+        }
+    }
+
+    /**
+     * Get a customer's setting from the database.
+     *
+     * @param string $setting_name The setting name that is going to be returned.
+     * @param int $customer_id The selected customer id.
+     *
+     * @return string Returns the value of the selected user setting.
+     */
+    public function get_setting($setting_name, $customer_id)
+    {
+        $customer_settings = $this->db->get_where('user_settings',
+            ['id_users' => $customer_id])->row_array();
+        return $customer_settings[$setting_name];
+    }
+
+    /**
+     * Set a customer's setting value in the database.
+     *
+     * The customer and settings record must already exist.
+     *
+     * @param string $setting_name The setting's name.
+     * @param string $value The setting's value.
+     * @param int $customer_id The selected provider id.
+     */
+    public function set_setting($setting_name, $value, $customer_id)
+    {
+        $this->db->where(['id_users' => $customer_id]);
+        return $this->db->update('user_settings', [$setting_name => $value]);
+    }
+
+    /**
+     * Validate Records Username
+     *
+     * @param string $username The customer records username.
+     * @param int $user_id The user record id.
+     *
+     * @return bool Returns the validation result.
+     */
+    public function validate_username($username, $user_id)
+    {
+        $num_rows = $this->db->get_where('user_settings',
+            ['username' => $username, 'id_users <> ' => $user_id])->num_rows();
+        return ($num_rows > 0) ? FALSE : TRUE;
+    }
+	// MCY - end of added
 }

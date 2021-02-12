@@ -84,6 +84,7 @@ $config['url_suffix'] = '';
 
 $config['language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
     [
+/** MCY - removed - restrict language to english
         'ar' => 'arabic',
         'bu' => 'bulgarian',
         'zh' => 'chinese',
@@ -107,6 +108,11 @@ $config['language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
         'es' => 'spanish',
         'tr' => 'turkish',
         'sv' => 'swedish'
+MCY - end of removed */
+// MCY - added
+       'en' => 'english'
+// MCY - end of added
+		
     ][substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)]
     : Config::LANGUAGE;
 
@@ -121,6 +127,7 @@ $config['language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
 |
 */
 $config['available_languages'] = [
+/** MCY - removed - restrict language to english
     'arabic',
     'bulgarian',
     'catalan',
@@ -148,6 +155,10 @@ $config['available_languages'] = [
     'slovak',
     'spanish',
     'turkish'
+MCY - end of removed */
+// MCY - added
+	'english'
+// MCY - end of added
 ];
 
 /*

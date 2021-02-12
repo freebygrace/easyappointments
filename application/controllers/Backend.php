@@ -79,6 +79,9 @@ class Backend extends EA_Controller {
         $view['customers'] = $this->customers_model->get_batch();
         $view['calendar_view'] = ! empty($calendar_view_query_param) ? $calendar_view_query_param : $user['settings']['calendar_view'];
         $view['timezones'] = $this->timezones->to_array();
+        // MCY - added
+        $view['default_timezone'] = $this->timezones->get_default_timezone();
+        // MCY - end of added
         $this->set_user_data($view);
 
         if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
@@ -199,6 +202,9 @@ class Backend extends EA_Controller {
         $view['available_providers'] = $this->providers_model->get_available_providers();
         $view['available_services'] = $this->services_model->get_available_services();
         $view['timezones'] = $this->timezones->to_array();
+        // MCY - added
+        $view['default_timezone'] = $this->timezones->get_default_timezone();
+        // MCY - end of added
 
         if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
         {
@@ -245,6 +251,9 @@ class Backend extends EA_Controller {
         $view['services'] = $this->services_model->get_batch();
         $view['categories'] = $this->services_model->get_all_categories();
         $view['timezones'] = $this->timezones->to_array();
+        // MCY - added
+        $view['default_timezone'] = $this->timezones->get_default_timezone();
+        // MCY - end of added
         $this->set_user_data($view);
 
         $this->load->view('backend/header', $view);
@@ -281,6 +290,9 @@ class Backend extends EA_Controller {
         $view['services'] = $this->services_model->get_batch();
         $view['working_plan'] = $this->settings_model->get_setting('company_working_plan');
         $view['timezones'] = $this->timezones->to_array();
+        // MCY - added
+        $view['default_timezone'] = $this->timezones->get_default_timezone();
+        // MCY - end of added
         $view['working_plan_exceptions'] = '{}';
         $this->set_user_data($view);
 
@@ -319,6 +331,9 @@ class Backend extends EA_Controller {
         $view['system_settings'] = $this->settings_model->get_settings();
         $view['user_settings'] = $this->user_model->get_user($user_id);
         $view['timezones'] = $this->timezones->to_array();
+        // MCY - added
+        $view['default_timezone'] = $this->timezones->get_default_timezone();
+        // MCY - end of added
 
         // book_advance_timeout preview
         $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');

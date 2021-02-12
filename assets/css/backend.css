@@ -21,7 +21,7 @@ root {
    -------------------------------------------------------------------- */
 
 #header {
-    background-color: #429a82;
+    background-color: #94dac0;
     box-shadow: none;
     border-radius: 0;
     padding: 0;
@@ -148,7 +148,7 @@ body .modal .modal-title {
 
 body .modal-header {
     padding: 20px 15px;
-    background: #429a82;
+    background: #94dac0;
 }
 
 body .modal-header h3 {

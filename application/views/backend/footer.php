@@ -1,8 +1,8 @@
 <div id="footer">
     <div id="footer-content" class="col-12 col-sm-8">
-        <img class="mr-1" src="<?= base_url('assets/img/logo-16x16.png') ?>" alt="Easy!Appointments Logo">
+        <img class="mr-1" src="<?= base_url('assets/img/logo-16x16.png') ?>" alt="CWALC Scheduler Logo">
         <a href="https://easyappointments.org">
-            Easy!Appointments
+            CWALC Scheduler - powered by Easy!Appointments
         </a>
 
         v<?= config('version') ?>
@@ -31,12 +31,13 @@
             <i class="fas fa-language mr-2"></i>
         	<?= ucfirst(config('language')) ?>
         </span>
-
+		<!-- MCY - removed
         |
 
         <a href="<?= site_url('appointments') ?>">
             <?= lang('go_to_booking_page') ?>
         </a>
+		-->
     </div>
 
     <div id="footer-user-display-name" class="col-12 col-sm-4">

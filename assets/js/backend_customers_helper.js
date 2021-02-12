@@ -86,8 +86,13 @@
             $('.record-details')
                 .find('input, select, textarea')
                 .prop('disabled', false);
+			
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
+
+			// MCY - added
+            $('#customer-password, #customer-password-confirm').addClass('required');
+			// MCY - end of added
         });
 
         /**
@@ -99,8 +104,13 @@
                 .prop('disabled', false);
             $('#add-edit-delete-group').hide();
             $('#save-cancel-group').show();
+			
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
+            
+			// MCY - added
+            $('#customer-password, #customer-password-confirm').removeClass('required');
+			// MCY - end of added
         });
 
         /**
@@ -127,9 +137,32 @@
                 city: $('#city').val(),
                 zip_code: $('#zip-code').val(),
                 notes: $('#notes').val(),
-                timezone: $('#timezone').val(),
+				// MCY - added
+				settings: {
+                    username: $('#customer-username').val(),
+                    notifications: $('#customer-notifications').prop('checked'),
+                    calendar_view: $('#customer-calendar-view').val()
+				},
+				// MCY - end of added
+				
+                //timezone: $('#timezone').val(),
+                timezone: $('#customer-timezone').val(),
                 language: $('#language').val() || 'english'
             };
+
+            // MCY - added - include customer locations
+            customer.providers = [];
+            $('#customer-providers input:checkbox').each(function () {
+                if ($(this).prop('checked')) {
+                    customer.providers.push($(this).attr('data-id'));
+                }
+            });   
+
+			// Include password if changed.
+            if ($('#customer-password').val() !== '') {
+                customer.settings.password = $('#customer-password').val();
+            }
+			// MCY - end of added
 
             if ($('#customer-id').val()) {
                 customer.id = $('#customer-id').val();
@@ -143,29 +176,54 @@
         });
 
         /**
-         * Event: Delete Customer Button "Click"
+		
+		// MCY - added
+        /**
+         * Event: Customer Username "Focusout"
+         *
+         * When the user leaves the username input field we will need to check if the username
+         * is not taken by another record in the system. Usernames must be unique.
          */
-        $('#customers').on('click', '#delete-customer', function () {
-            var customerId = $('#customer-id').val();
-            var buttons = [
-                {
-                    text: EALang.cancel,
-                    click: function () {
-                        $('#message-box').dialog('close');
-                    }
-                },
-                {
-                    text: EALang.delete,
-                    click: function () {
-                        instance.delete(customerId);
-                        $('#message-box').dialog('close');
+        $('#customer-username').focusout(function () {
+            var $input = $(this);
+
+            if ($input.prop('readonly') == true || $input.val() == '') {
+                return;
+            }
+
+            var userId = $input.parents().eq(2).find('.record-id').val();
+
+            if (userId == undefined) {
+                return;
+            }
+
+            var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_validate_username';
+            var postData = {
+                csrfToken: GlobalVariables.csrfToken,
+                username: $input.val(),
+                user_id: userId
+            };
+
+            $.post(postUrl, postData, function (response) {
+                if (!GeneralFunctions.handleAjaxExceptions(response)) {
+                    return;
+                }
+
+                if (response == false) {
+                    $input.closest('.form-group').addClass('has-error');
+                    $input.attr('already-exists', 'true');
+                    $input.parents().eq(3).find('.form-message').text(EALang.username_already_exists);
+                    $input.parents().eq(3).find('.form-message').show();
+                } else {
+                    $input.closest('.form-group').removeClass('has-error');
+                    $input.attr('already-exists', 'false');
+                    if ($input.parents().eq(3).find('.form-message').text() == EALang.username_already_exists) {
+                        $input.parents().eq(3).find('.form-message').hide();
                     }
                 }
-            ];
-
-            GeneralFunctions.displayMessageBox(EALang.delete_customer,
-                EALang.delete_record_prompt, buttons);
+            }, 'json').fail(GeneralFunctions.ajaxFailureHandler);
         });
+		// MCY - end of added
     };
 
     /**
@@ -235,11 +293,35 @@
                 throw new Error(EALang.fields_are_required);
             }
 
+			// MCY - added
+            // Validate passwords.
+            if ($('#customer-password').val() != $('#customer-password-confirm').val()) {
+                $('#customer-password, #customer-password-confirm').closest('.form-group').addClass('has-error');
+                throw 'Passwords mismatch!';
+            }
+
+            if ($('#customer-password').val().length < BackendCustomers.MIN_PASSWORD_LENGTH
+                && $('#customer-password').val() != '') {
+                $('#customer-password, #customer-password-confirm').closest('.form-group').addClass('has-error');
+                throw 'Password must be at least ' + BackendCustomers.MIN_PASSWORD_LENGTH
+                + ' characters long.';
+            }
+			// MCY - end of added
+
             // Validate email address.
             if (!GeneralFunctions.validateEmail($('#email').val())) {
                 $('#email').closest('.form-group').addClass('has-error');
                 throw new Error(EALang.invalid_email);
             }
+
+			
+			// MCY - added
+            // Check if username exists
+            if ($('#customer-username').attr('already-exists') == 'true') {
+                $('#customer-username').closest('.form-group').addClass('has-error');
+                throw 'Username already exists.';
+            }			
+			// MCY - end of added
 
             return true;
         } catch (error) {
@@ -259,17 +341,28 @@
             .find('input, select, textarea')
             .val('')
             .prop('disabled', true);
-        $('.record-details #timezone').val('UTC');
+			
+        // MCY - removed - see below
+        //$('.record-details #timezone').val('UTC');
+        // MCY - end of removed
 
         $('#language').val('english');
 
         $('#customer-appointments').empty();
-        $('#edit-customer, #delete-customer').prop('disabled', true);
+        $('#edit-customer, #delete-customer').prop('disabled', true);	
         $('#add-edit-delete-group').show();
         $('#save-cancel-group').hide();
 
         $('.record-details .has-error').removeClass('has-error');
         $('.record-details #form-message').hide();
+
+		// MCY - added
+        $('.record-details #customer-calendar-view').val('default');
+        $('.record-details #customer-timezone').val(GlobalVariables.defaultTimezone);
+        $('#customer-notifications').prop('checked', true);
+        $('#customer-providers input:checkbox').prop('checked', false);
+        $('#customer-providers input:checkbox').prop('disabled', true);
+		// MCY - end of added
 
         $('#filter-customers button').prop('disabled', false);
         $('#filter-customers .selected').removeClass('selected');
@@ -291,8 +384,26 @@
         $('#city').val(customer.city);
         $('#zip-code').val(customer.zip_code);
         $('#notes').val(customer.notes);
-        $('#timezone').val(customer.timezone);
+        // MCY - changed
+//        $('#timezone').val(customer.timezone);
+        $('#customer-timezone').val(customer.timezone);
+        // MCY - end of changed
         $('#language').val(customer.language || 'english');
+
+		// MCY - added
+		$('#customer-username').val(customer.settings.username);
+        $('#customer-calendar-view').val(customer.settings.calendar_view);
+        $('#customer-notifications').prop('checked', Boolean(Number(customer.settings.notifications)));
+		
+        $('#customer-providers input:checkbox').prop('checked', false);
+        $.each(customer.providers, function (index, providerId) {
+            $('#customer-providers input:checkbox').each(function () {
+                if ($(this).attr('data-id') == providerId) {
+                    $(this).prop('checked', true);
+                }
+            });
+        });
+		// MCY - end of added
 
         $('#customer-appointments').empty();
 
@@ -328,7 +439,7 @@
                                 'class': 'fas fa-edit mr-1'
                             }),
                             $('<strong/>', {
-                                'text': appointment.service.name + ' - ' + appointment.provider.first_name + ' ' + appointment.provider.last_name
+                                'text': appointment.provider.first_name + ' ' + appointment.provider.last_name
                             }),
                             $('<br/>'),
                         ]
@@ -337,10 +448,14 @@
                     // Start
 
                     $('<small/>', {
-                        'text': start
+                        // MCY - changed
+                        //'text': start
+                        'text': ((appointment.notes) ? EALang.confirmed : EALang.pending) + ' - ' + start
+                        // MCY - end of changed
                     }),
                     $('<br/>'),
 
+                    /** MCY - removed
                     // End
 
                     $('<small/>', {
@@ -353,6 +468,7 @@
                     $('<small/>', {
                         'text': GlobalVariables.timezones[appointment.provider.timezone]
                     })
+                    MCY - end of removed */
                 ]
             })
                 .appendTo('#customer-appointments');

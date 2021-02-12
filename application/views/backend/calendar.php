@@ -25,8 +25,14 @@
         secretaryProviders: <?= json_encode($secretary_providers) ?>,
         calendarView: <?= json_encode($calendar_view) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        // MCY - added
+        defaultTimezone: <?= json_encode($default_timezone) ?>,
+        // MCY - end of added
         user: {
             id: <?= $user_id ?>,
+			// MCY - add display name so we can display in calendar drop down when a pilot is logged in
+			'display_name' : <?= json_encode($this->user_model->get_user_display_name($user_id)) ?>,
+			// MCY - end of added
             email: <?= json_encode($user_email) ?>,
             timezone: <?= json_encode($timezone) ?>,
             role_slug: <?= json_encode($role_slug) ?>,
@@ -72,6 +78,8 @@
                         <?= lang('appointment') ?>
                     </button>
 
+                    <!-- MCY - changed -->
+                    <?php if ($privileges[PRIV_UNAVAILABLE]['add'] == TRUE): ?>
                     <button class="btn btn-light dropdown-toggle" id="insert-dropdown" data-toggle="dropdown">
                         <span class="caret"></span>
                         <span class="sr-only">Toggle Dropdown</span>
@@ -88,6 +96,8 @@
                             <?= lang('working_plan_exception') ?>
                         </a>
                     </div>
+                    <?php endif ?>
+                    <!-- MCY - end of changed -->
                 </div>
             <?php endif ?>
 
@@ -96,12 +106,14 @@
                 <i class="fas fa-sync-alt"></i>
             </button>
 
+            <!-- MCY - removed
             <?php if ($calendar_view === 'default'): ?>
                 <a class="btn btn-light" href="<?= site_url('backend?view=table') ?>"
                    data-tippy-content="<?= lang('table') ?>">
                     <i class="fas fa-table"></i>
                 </a>
             <?php endif ?>
+            MCY - end of removed -->
 
             <?php if ($calendar_view === 'table'): ?>
                 <a class="btn btn-light" href="<?= site_url('backend?view=default') ?>"
@@ -127,13 +139,16 @@
             </div>
 
             <div class="modal-body">
-                <div class="modal-message alert d-none"></div>
+                <div class="modal-message alert hidden"></div>
+				
+                <!-- MCY - added - secretary can only edit passengers -->
+				<?php $disabled = ($role_slug == DB_SLUG_ADMIN) ? '' : 'disabled' ?>
 
                 <form>
                     <fieldset>
                         <legend><?= lang('appointment_details_title') ?></legend>
 
-                        <input id="appointment-id" type="hidden">
+                        <input <?= $disabled ?> id="appointment-id" type="hidden">
 
                         <div class="row">
                             <div class="col-12 col-sm-6">
@@ -142,7 +157,7 @@
                                         <?= lang('service') ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <select id="select-service" class="required form-control">
+                                    <select <?= $disabled ?> id="select-service" class="required form-control">
                                         <?php
                                         // Group services by category, only if there is at least one service
                                         // with a parent category.
@@ -218,18 +233,21 @@
                                         <?= lang('provider') ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <select id="select-provider" class="required form-control"></select>
+                                    <select <?= $disabled ?> id="select-provider" class="required form-control"></select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="appointment-location" class="control-label">
                                         <?= lang('location') ?>
                                     </label>
-                                    <input id="appointment-location" class="form-control">
+                                    <input <?= $disabled ?> id="appointment-location" class="form-control">
                                 </div>
 
                                 <div class="form-group">
+                                    <!-- MCY - changed
                                     <label for="appointment-notes" class="control-label"><?= lang('notes') ?></label>
+                                    MCY - end of changed -->
+                                    <label for="appointment-notes" class="control-label"><?= lang('passengers') ?></label>
                                     <textarea id="appointment-notes" class="form-control" rows="3"></textarea>
                                 </div>
                             </div>
@@ -238,12 +256,12 @@
                                 <div class="form-group">
                                     <label for="start-datetime"
                                            class="control-label"><?= lang('start_date_time') ?></label>
-                                    <input id="start-datetime" class="required form-control">
+                                    <input <?= $disabled ?> id="start-datetime" class="required form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="end-datetime" class="control-label"><?= lang('end_date_time') ?></label>
-                                    <input id="end-datetime" class="required form-control">
+                                    <input <?= $disabled ?> id="end-datetime" class="required form-control">
                                 </div>
 
                                 <div class="form-group">
@@ -273,11 +291,15 @@
                     <fieldset>
                         <legend>
                             <?= lang('customer_details_title') ?>
+                            <!-- MCY - added - secretary can only view pilot -->
+                            <?php if ($role_slug == DB_SLUG_SECRETARY) { echo '<div style="display:none">'; } ?>
+                            <!-- MCY - removed - not enough fields here to create a pilot
                             <button id="new-customer" class="btn btn-outline-secondary btn-sm" type="button"
                                     data-tippy-content="<?= lang('clear_fields_add_existing_customer_hint') ?>">
                                 <i class="fas fa-plus-square mr-2"></i>
                                 <?= lang('new') ?>
                             </button>
+                            MCY - end of removed -->
                             <button id="select-customer" class="btn btn-outline-secondary btn-sm" type="button"
                                     data-tippy-content="<?= lang('pick_existing_customer_hint') ?>">
                                 <i class="fas fa-hand-pointer mr-2"></i>
@@ -289,6 +311,8 @@
                                    placeholder="<?= lang('type_to_filter_customers') ?>"
                                    style="display: none;" class="input-sm form-control">
                             <div id="existing-customers-list" style="display: none;"></div>
+                            <!-- MCY - added - secretary can only view pilot -->
+                            <?php if ($role_slug == DB_SLUG_SECRETARY) { echo '</div>'; } ?>
                         </legend>
 
                         <input id="customer-id" type="hidden">
@@ -300,7 +324,7 @@
                                         <?= lang('first_name') ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input id="first-name" class="required form-control">
+                                    <input disabled id="first-name" class="required form-control">
                                 </div>
 
                                 <div class="form-group">
@@ -308,15 +332,35 @@
                                         <?= lang('last_name') ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input id="last-name" class="required form-control">
+                                    <input disabled id="last-name" class="required form-control">
                                 </div>
 
+                                <!-- MCY - added - hide extra fields -->
+                                <?php { echo '<div style="display:none">'; } ?>
+                                <div class="form-group">
+                                    <label for="address" class="control-label">
+                                        <?= lang('address') ?>
+                                    </label>
+                                    <input disabled id="address" class="form-control">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="city" class="control-label">
+                                        <?= lang('city') ?>
+                                    </label>
+                                    <input disabled id="city" class="form-control">
+                                </div>
+                                <!-- MCY - added - hide extra fields -->
+                                <?php { echo '</div>'; } ?>
+                            </div>
+                            
+                            <div class="col-12 col-sm-6">
                                 <div class="form-group">
                                     <label for="email" class="control-label">
                                         <?= lang('email') ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input id="email" class="required form-control">
+                                    <input disabled id="email" class="required form-control">
                                 </div>
 
                                 <div class="form-group">
@@ -326,38 +370,27 @@
                                             <span class="text-danger">*</span>
                                         <?php endif ?>
                                     </label>
-                                    <input id="phone-number"
+                                    <input disabled id="phone-number"
                                            class="form-control <?= $require_phone_number === '1' ? 'required' : '' ?>">
                                 </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <label for="address" class="control-label">
-                                        <?= lang('address') ?>
-                                    </label>
-                                    <input id="address" class="form-control">
-                                </div>
 
-                                <div class="form-group">
-                                    <label for="city" class="control-label">
-                                        <?= lang('city') ?>
-                                    </label>
-                                    <input id="city" class="form-control">
-                                </div>
-
+                                <!-- MCY - added - hide extra fields -->
+                                <?php { echo '<div style="display:none">'; } ?>
                                 <div class="form-group">
                                     <label for="zip-code" class="control-label">
                                         <?= lang('zip_code') ?>
                                     </label>
-                                    <input id="zip-code" class="form-control">
+                                    <input disabled id="zip-code" class="form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="customer-notes" class="control-label">
                                         <?= lang('notes') ?>
                                     </label>
-                                    <textarea id="customer-notes" rows="2" class="form-control"></textarea>
+                                    <textarea disabled id="customer-notes" rows="2" class="form-control"></textarea>
                                 </div>
+                                <!-- MCY - added - hide extra fields -->
+                                <?php { echo '</div>'; } ?>
                             </div>
                         </div>
                     </fieldset>

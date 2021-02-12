@@ -29,7 +29,11 @@
             <!-- FRAME TOP BAR -->
 
             <div id="header">
+				<!-- MCY - change
                 <span id="company-name"><?= $company_name ?></span>
+				-->
+                <span id="company-name"><?= lang('page_title') ?></span>
+				<!-- MCY - end of change -->
 
                 <div id="steps">
                     <div id="step-1" class="book-step active-step"
@@ -41,6 +45,7 @@
                          data-tippy-content="<?= lang('appointment_date_and_time') ?>">
                         <strong>2</strong>
                     </div>
+                    <!-- MCY - remove - use logged in pilot
                     <div id="step-3" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('customer_information') ?>">
                         <strong>3</strong>
@@ -48,6 +53,11 @@
                     <div id="step-4" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('appointment_confirmation') ?>">
                         <strong>4</strong>
+                    </div>
+                    MCY - end of remove -->
+                    <div id="step-3" class="book-step" data-toggle="tooltip"
+                         data-tippy-content="<?= lang('appointment_confirmation') ?>">
+                        <strong>3</strong>
                     </div>
                 </div>
             </div>
@@ -215,7 +225,10 @@
                             <div id="select-time">
                                 <div class="form-group">
                                     <label for="select-timezone"><?= lang('timezone') ?></label>
+                                    <!-- MCY - changed
                                     <?= render_timezone_dropdown('id="select-timezone" class="form-control" value="UTC"'); ?>
+                                    MCY - end of changed -->
+                                    <?= render_timezone_dropdown('id="select-timezone" class="form-control"'); ?>
                                 </div>
 
                                 <div id="available-hours"></div>
@@ -239,6 +252,7 @@
             </div>
 
             <!-- ENTER CUSTOMER DATA -->
+            <!-- MCY remove - pilot already logged in
 
             <div id="wizard-frame-3" class="wizard-frame" style="display:none;">
                 <div class="frame-container">
@@ -348,10 +362,14 @@
                     </button>
                 </div>
             </div>
+            MCY - end of remove -->
 
             <!-- APPOINTMENT DATA CONFIRMATION -->
 
+            <!-- MCY - remove - this is now the third frame
             <div id="wizard-frame-4" class="wizard-frame" style="display:none;">
+            MCY - end of remove -->
+            <div id="wizard-frame-3" class="wizard-frame" style="display:none;">
                 <div class="frame-container">
                     <h2 class="frame-title"><?= lang('appointment_confirmation') ?></h2>
                     <div class="row frame-content">
@@ -376,8 +394,12 @@
                 </div>
 
                 <div class="command-buttons">
+                    <!-- MCY - removed
                     <button type="button" id="button-back-4" class="btn button-back btn-outline-secondary"
                             data-step_index="4">
+                    MCY - end of removed -->
+                    <button type="button" id="button-back-3" class="btn button-back btn-outline-secondary"
+                            data-step_index="3">
                         <i class="fas fa-chevron-left mr-2"></i>
                         <?= lang('back') ?>
                     </button>
@@ -446,7 +468,18 @@
         providerData: <?= json_encode($provider_data) ?>,
         customerData: <?= json_encode($customer_data) ?>,
         displayAnyProvider: <?= json_encode($display_any_provider) ?>,
-        csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>
+        csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
+        // MCY - added
+		user: {
+			id: <?= $user_id ?>,
+            display_name: <?= json_encode($user_display_name) ?>,
+            phone_number: <?= json_encode($user_phone_number) ?>,
+			email: <?= json_encode($user_email) ?>,
+            timezone: <?= json_encode($user_timezone) ?>,
+			role_slug: <?= json_encode($role_slug) ?>,
+            privileges: <?= json_encode($privileges) ?>,
+		}
+        // MCY - end of added
     };
 
     var EALang = <?= json_encode($this->lang->language) ?>;

@@ -40,6 +40,13 @@ class Appointments_model extends EA_Model {
      */
     public function add($appointment)
     {
+		// MCY - added - strip whitespace from notes, a non-empty notes should contain passenger names
+		if ($appointment['notes'])
+		{
+			$appointment['notes'] = trim($appointment['notes']);
+		}
+		// MCY - end of added
+		
         // Validate the appointment data before doing anything.
         $this->validate($appointment);
 
@@ -615,4 +622,18 @@ class Appointments_model extends EA_Model {
             ->row()
             ->attendants_number;
     }
+
+	// MCY - added
+    /**
+     * Determine if the appointment has been accepted or not.
+     *
+     * @param array $appointment Contains the appointment data.
+     *
+     * @return bool Returns TRUE if the appointment has been accepted, otherwise FALSE.
+     */
+    public function is_accepted($appointment)
+    {
+		return isset($appointment['notes']) ? (strlen($appointment['notes']) > 0) : FALSE;
+    }
+	// MCY - end of added
 }

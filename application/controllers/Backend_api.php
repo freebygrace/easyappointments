@@ -177,6 +177,12 @@ class Backend_api extends EA_Controller {
             {
                 $where_id = 'id_users_provider';
             }
+            // MCY - added - filter by pilot
+            else if ($this->input->post('filter_type') == FILTER_TYPE_CUSTOMER)
+            {
+                $where_id = 'id_users_customer';
+            }
+            // MCY - end of added
             else
             {
                 $where_id = 'id_services';
@@ -254,6 +260,7 @@ class Backend_api extends EA_Controller {
             {
                 $customer = json_decode($this->input->post('customer_data'), TRUE);
 
+                /** MCY - removed - we no longer edit pilots in the appointment dialog
                 $required_privileges = ( ! isset($customer['id']))
                     ? $this->privileges[PRIV_CUSTOMERS]['add']
                     : $this->privileges[PRIV_CUSTOMERS]['edit'];
@@ -263,6 +270,13 @@ class Backend_api extends EA_Controller {
                 }
 
                 $customer['id'] = $this->customers_model->add($customer);
+                MCY - end of removed */
+                
+                // MCY - added - handle a new pilot selection
+                if (!isset($customer['id']))
+                {
+                    throw new Exception('No pilot specified.');                    
+                }
             }
 
             // Save appointment changes to the database.
@@ -402,7 +416,10 @@ class Backend_api extends EA_Controller {
                         new Text($this->input->post('delete_reason')));
                 }
 
-                $send_customer = $this->settings_model->get_setting('customer_notifications');
+				// MCY - changed - use pilot's notification setting
+                //$send_customer = $this->settings_model->get_setting('customer_notifications');
+                $send_customer = $this->customers_model->get_setting('notifications', $customer['id']);
+				// MCY - end of changed
 
                 if ((bool)$send_customer === TRUE)
                 {
@@ -599,8 +616,12 @@ class Backend_api extends EA_Controller {
             $unavailable = json_decode($this->input->post('unavailable'), TRUE);
 
             $required_privileges = ( ! isset($unavailable['id']))
-                ? $this->privileges[PRIV_APPOINTMENTS]['add']
-                : $this->privileges[PRIV_APPOINTMENTS]['edit'];
+            // MCY - changed
+            //? $this->privileges[PRIV_APPOINTMENTS]['add']
+            //: $this->privileges[PRIV_APPOINTMENTS]['edit'];
+            ? $this->privileges[PRIV_UNAVAILABLE]['add']
+            : $this->privileges[PRIV_UNAVAILABLE]['edit'];
+            // MCY - end of changed
             if ($required_privileges == FALSE)
             {
                 throw new Exception('You do not have the required privileges for this task.');
@@ -679,7 +700,10 @@ class Backend_api extends EA_Controller {
     {
         try
         {
-            if ($this->privileges[PRIV_APPOINTMENTS]['delete'] == FALSE)
+            // MCY - changed
+            //if ($this->privileges[PRIV_APPOINTMENTS]['delete'] == FALSE)
+            if ($this->privileges[PRIV_UNAVAILABLE]['delete'] == FALSE)
+            // MCY - end of changed
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }

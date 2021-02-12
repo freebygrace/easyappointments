@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#35A768">
-    <title><?= lang('login') ?> | Easy!Appointments</title>
+    <title><?= lang('login') ?> | CWALC Scheduler</title>
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
@@ -40,45 +40,58 @@
 </head>
 <body>
 <div id="login-frame" class="frame-container">
-    <h2><?= lang('backend_section') ?></h2>
-    <p><?= lang('you_need_to_login') ?></p>
-    <hr>
-    <div class="alert d-none"></div>
-    <form id="login-form">
-        <div class="form-group">
-            <label for="username"><?= lang('username') ?></label>
-            <input type="text" id="username"
-                   placeholder="<?= lang('enter_username_here') ?>"
-                   class="form-control"/>
+	<div class="container-fluid">
+        <div class="row">
+			<div class="col-md-4">
+				<img src="<?= base_url('assets/img/logo.png') ?>">
+            </div>
+            <div class="col-md-8">
+				<h2><?= lang('application_name') ?></h2>
+				<h5><?= lang('you_need_to_login') ?></h5>
+			</div>
         </div>
-        <div class="form-group">
-            <label for="password"><?= lang('password') ?></label>
-            <input type="password" id="password"
-                   placeholder="<?= lang('enter_password_here') ?>"
-                   class="form-control"/>
-        </div>
+        <div class="row">
+			<div class="col-md-12">
+				<hr>
+				<div class="alert d-none"></div>
+				<form id="login-form">
+					<div class="form-group">
+						<label for="username"><?= lang('username') ?></label>
+						<input type="text" id="username"
+							   placeholder="<?= lang('enter_username_here') ?>"
+							   class="form-control"/>
+					</div>
+					<div class="form-group">
+						<label for="password"><?= lang('password') ?></label>
+						<input type="password" id="password"
+							   placeholder="<?= lang('enter_password_here') ?>"
+							   class="form-control"/>
+					</div>
 
-        <div class="form-group">
-            <button type="submit" id="login" class="btn btn-primary">
-                <i class="fas fa-sign-in-alt mr-2"></i>
-                <?= lang('login') ?>
-            </button>
-        </div>
+					<div class="form-group">
+						<button type="submit" id="login" class="btn btn-primary">
+							<i class="fas fa-sign-in-alt mr-2"></i>
+							<?= lang('login') ?>
+						</button>
+					</div>
 
-        <a href="<?= site_url('user/forgot_password') ?>" class="forgot-password">
-            <?= lang('forgot_your_password') ?></a>
-        |
-        <span id="select-language" class="badge badge-success">
-              <?= ucfirst(config('language')) ?>
-            </span>
+					<a href="<?= site_url('user/forgot_password') ?>" class="forgot-password">
+						<?= lang('forgot_your_password') ?></a>
+					|
+					<span id="select-language" class="badge badge-success">
+						  <?= ucfirst(config('language')) ?>
+						</span>
 
-        <div class="mt-4">
-            <small>
-                Powered by
-                <a href="https://easyappointments.org">Easy!Appointments</a>
-            </small>
-        </div>
-    </form>
+					<div class="mt-4">
+						<small>
+							Powered by
+							<a href="https://easyappointments.org">Easy!Appointments</a>
+						</small>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>

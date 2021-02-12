@@ -39,7 +39,11 @@
 |
 */
 
-$route['default_controller'] = 'appointments';
+// MCY - changed - default to back end
+// $route['default_controller'] = "appointments";
+$route['default_controller'] = "backend";
+// MCY - end of changed
+
 $route['404_override'] = 'errors/error404';
 
 

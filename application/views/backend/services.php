@@ -10,6 +10,9 @@
         services: <?= json_encode($services) ?>,
         categories: <?= json_encode($categories) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        // MCY - added
+        defaultTimezone: <?= json_encode($default_timezone) ?>,
+        // MCY - end of added
         user: {
             id: <?= $user_id ?>,
             email: <?= json_encode($user_email) ?>,

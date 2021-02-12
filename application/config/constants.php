@@ -50,6 +50,9 @@ define('DB_SLUG_PROVIDER', 'provider');
 define('DB_SLUG_ADMIN', 'admin');
 define('DB_SLUG_SECRETARY', 'secretary');
 
+// MCY - added - filter by Pilot
+define('FILTER_TYPE_CUSTOMER', 'customer');
+// MCY - end of added
 define('FILTER_TYPE_PROVIDER', 'provider');
 define('FILTER_TYPE_SERVICE', 'service');
 
@@ -64,6 +67,9 @@ define('PRIV_ADD', 2);
 define('PRIV_EDIT', 4);
 define('PRIV_DELETE', 8);
 
+// MCY - added - privileges for unavailable timeslots in calendar
+define('PRIV_UNAVAILABLE', 'unavailable');
+// MCY - end of added
 define('PRIV_APPOINTMENTS', 'appointments');
 define('PRIV_CUSTOMERS', 'customers');
 define('PRIV_SERVICES', 'services');

@@ -23,12 +23,22 @@ class Timezones {
     /**
      * @var string
      */
-    protected $default = 'UTC';
+    // MCY - changed - use local timezone by default
+    //protected $default = 'UTC';
+    protected $default = 'America/Toronto';
+    // MCY - end of changed
 
     /**
      * @var array
      */
     protected $timezones = [
+        // MCY - added
+        'America' => [
+            'America/Toronto' => 'Toronto (-5:00)',
+        ],
+        // MCY - end of added
+        
+        /** MCY - removed
         'UTC' => [
             'UTC' => 'UTC'
         ],
@@ -458,6 +468,7 @@ class Timezones {
             'Australia/LHI' => 'LHI (+10:30)',
             'Australia/Lord_Howe' => 'Lord_Howe (+10:30)',
         ],
+        MCY - end of removed */
     ];
 
     /**
@@ -501,7 +512,10 @@ class Timezones {
      */
     public function get_default_timezone()
     {
-        return 'UTC';
+        // MCY - changed - default to EST
+        //return 'UTC';
+        return 'America/Toronto';
+        // MCY - end of changed
     }
 
     /**

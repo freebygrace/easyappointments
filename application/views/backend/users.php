@@ -18,6 +18,9 @@
         secretaries: <?= json_encode($secretaries) ?>,
         services: <?= json_encode($services) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        // MCY - added
+        defaultTimezone: <?= json_encode($default_timezone) ?>,
+        // MCY - end of added
         workingPlan: <?= json_encode(json_decode($working_plan)) ?>,
         workingPlanExceptions: <?= json_encode(json_decode($working_plan_exceptions)) ?>,
         user: {
@@ -254,7 +257,9 @@
                                         </label>
                                         <select id="provider-calendar-view" class="form-control required">
                                             <option value="default">Default</option>
+                                            <!-- MCY - removed
                                             <option value="table">Table</option>
+                                            MCY - end of removed -->
                                         </select>
                                     </div>
 
@@ -542,7 +547,9 @@
                                 </label>
                                 <select id="secretary-calendar-view" class="form-control required">
                                     <option value="default">Default</option>
+                                    <!-- MCY - removed
                                     <option value="table">Table</option>
+                                    MCY - end of removed -->
                                 </select>
                             </div>
 
@@ -750,7 +757,9 @@
                                 </label>
                                 <select id="admin-calendar-view" class="form-control required">
                                     <option value="default">Default</option>
+                                    <!-- MCY - removed
                                     <option value="table">Table</option>
+                                    MCY - end of removed -->
                                 </select>
                             </div>
 

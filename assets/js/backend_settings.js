@@ -125,6 +125,11 @@ window.BackendSettings = window.BackendSettings || {};
         $('#calendar-view').val(GlobalVariables.settings.user.settings.calendar_view);
         $('#user-notifications').prop('checked', Boolean(Number(GlobalVariables.settings.user.settings.notifications)));
 
+        // MCY - added
+        $('#calendar-view').prop('disabled', true);
+        $('#timezone').prop('disabled', true);
+        // MCY - end of added
+
         // Set default settings helper.
         settings = new SystemSettings();
 

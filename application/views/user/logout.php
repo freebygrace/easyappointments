@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#35A768">
 
-    <title><?= lang('log_out') ?> | Easy!Appointments</title>
+    <title><?= lang('log_out') ?> | CWALC Scheduler</title>
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/logout.css') ?>">
@@ -26,29 +26,34 @@
 </head>
 <body>
 <div id="logout-frame" class="frame-container">
-    <h3><?= lang('log_out') ?></h3>
-    <p>
-        <?= lang('logout_success') ?>
-    </p>
+	<div class="container-fluid">
+        <div class="row">
+			<div class="col-md-4">
+				<img src="<?= base_url('assets/img/logo.png') ?>">
+            </div>
+            <div class="col-md-8">
+				<h2><?= lang('application_name') ?></h2>
+				<h5><?= lang('logout_success') ?></h5>
+			</div>
+        </div>
+        <div class="row">
+			<div class="col-md-12">
+				<hr>
 
-    <br>
+				<a href="<?= site_url('backend') ?>" class="btn btn-outline-secondary btn-large">
+					<i class="fas fa-wrench mr-2"></i>
+					<?= lang('login') ?>
+				</a>
 
-    <a href="<?= site_url() ?>" class="btn btn-success btn-large">
-        <i class="fas fa-calendar-alt mr-2"></i>
-        <?= lang('book_appointment_title') ?>
-    </a>
-
-    <a href="<?= site_url('backend') ?>" class="btn btn-outline-secondary btn-large">
-        <i class="fas fa-wrench mr-2"></i>
-        <?= lang('backend_section') ?>
-    </a>
-
-    <div class="mt-4">
-        <small>
-            Powered by
-            <a href="https://easyappointments.org">Easy!Appointments</a>
-        </small>
-    </div>
+				<div class="mt-4">
+					<small>
+						Powered by
+						<a href="https://easyappointments.org">Easy!Appointments</a>
+					</small>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>

@@ -22,6 +22,9 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
     'use strict';
 
     // Constants
+    // MCY - added
+	var FILTER_TYPE_CUSTOMER = 'customer';
+	// MCY - end of added
     var FILTER_TYPE_PROVIDER = 'provider';
     var FILTER_TYPE_SERVICE = 'service';
 
@@ -350,10 +353,16 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
         if ($(this).hasClass('fc-unavailable') || $parent.hasClass('fc-unavailable') || $altParent.hasClass('fc-unavailable')) {
             displayEdit = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
-                && GlobalVariables.user.privileges.appointments.edit === true)
+                // MCY - changed
+                //&& GlobalVariables.user.privileges.appointments.edit === true)
+                && GlobalVariables.user.privileges.unavailable.edit === true)
+                // MCY - end of changed
                 ? 'mr-2' : 'd-none';
             displayDelete = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
-                && GlobalVariables.user.privileges.appointments.delete === true)
+                // MCY - changed
+                //&& GlobalVariables.user.privileges.appointments.delete === true)
+                && GlobalVariables.user.privileges.unavailable.delete === true)
+                // MCY - end of changed
                 ? 'mr-2' : 'd-none'; // Same value at the time.
 
             $html = $('<div/>', {
@@ -546,6 +555,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     }),
                     $('<br/>'),
 
+                    /** MCY - removed
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
                         'text': EALang.service
@@ -554,6 +564,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         'text': event.data.service.name
                     }),
                     $('<br/>'),
+                    MCY - end of removed */
 
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
@@ -599,7 +610,10 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     $('<br/>'),
 
                     $('<strong/>', {
-                        'text': EALang.notes
+                    	// MCY - changed
+                    	//'text': EALang.notes
+                        'text': EALang.passengers
+                        // MCY - end of changed
                     }),
                     $('<span/>', {
                         'text': getEventNotes(event)
@@ -1019,7 +1033,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
      *
      * @param {Object} $calendar The calendar jQuery object.
      * @param {Number} recordId The selected record id.
-     * @param {String} filterType The filter type, could be either FILTER_TYPE_PROVIDER or FILTER_TYPE_SERVICE.
+     * @param {String} filterType The filter type, could be either FILTER_TYPE_CUSTOMER, FILTER_TYPE_PROVIDER or FILTER_TYPE_SERVICE.
      * @param {Date} startDate Visible start date of the calendar.
      * @param {Date} endDate Visible end date of the calendar.
      */
@@ -1047,13 +1061,28 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 response.appointments.forEach(function (appointment) {
                     var appointmentEvent = {
                         id: appointment.id,
-                        title: appointment.service.name + ' - '
-                            + appointment.customer.first_name + ' '
-                            + appointment.customer.last_name,
+
+						// MCY - changed
+                        //title: appointment.service.name + ' - '
+                        //    + appointment.customer.first_name + ' '
+                        //    + appointment.customer.last_name,
+	                    title: ((appointment.notes) ? EALang.confirmed : EALang.pending) + ' - '
+						+ appointment.provider.first_name + ' '
+						+ appointment.provider.last_name + ' - '
+	                    + appointment.customer.first_name + ' '
+                            + appointment.customer.last_name
+                            + ((appointment.notes) ?  (' - ' + appointment.notes) : ''),
+	                    // MCY - end of changed
                         start: moment(appointment.start_datetime),
                         end: moment(appointment.end_datetime),
                         allDay: false,
-                        data: appointment // Store appointment data for later use.
+                        data: appointment, // Store appointment data for later use.
+						// MCY - added Cycling Without Age colors
+						startEditable: false,
+						durationEditable: false,
+						textColor: (appointment.notes) ? 'black' : 'white',
+						backgroundColor: (appointment.notes) ? '#94dac0' : '#ed1c24'
+						// MCY - end of added
                     };
 
                     appointmentEvents.push(appointmentEvent);
@@ -1426,9 +1455,20 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 right: 'agendaDay,agendaWeek,month'
             },
 
+			// MCY - added - Display correct date if an appointment hash is provided
+			scrollTime: ((GlobalVariables.editAppointment != null) ? 
+				moment(GlobalVariables.editAppointment.start_datetime).hours().toString().concat(':00') : '8:00'),
+			defaultDate: ((GlobalVariables.editAppointment != null) ? GlobalVariables.editAppointment.start_datetime : undefined),
+			// MCY - end of added
+
             // Selectable
             selectable: true,
-            selectHelper: true,
+            
+			// MCY - changed
+            //selectHelper: true,
+            selectHelper: false,
+            // MCY - end of changed
+            
             select: function (start, end) {
                 if (!start.hasTime() || !end.hasTime()) {
                     return;
@@ -1436,6 +1476,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                 $('#insert-appointment').trigger('click');
 
+				/** MCY - remove
                 // Preselect service & provider.
                 var service;
 
@@ -1478,6 +1519,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 // Preselect time
                 $('#start-datetime').datepicker('setDate', new Date(start.format('YYYY/MM/DD HH:mm:ss')));
                 $('#end-datetime').datepicker('setDate', new Date(end.format('YYYY/MM/DD HH:mm:ss')));
+				MCY - end of removed */
 
                 return false;
             },
@@ -1524,24 +1566,54 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         calendarWindowResize();
 
         // Fill the select list boxes of the page.
-        if (GlobalVariables.availableProviders.length > 0) {
-            $('<optgroup/>', {
-                'label': EALang.providers,
-                'type': 'providers-group',
-                'html': GlobalVariables.availableProviders.map(function (availableProvider) {
-                    var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
-
-                    return $('<option/>', {
-                        'value': availableProvider.id,
-                        'type': FILTER_TYPE_PROVIDER,
-                        'google-sync': hasGoogleSync,
-                        'text': availableProvider.first_name + ' ' + availableProvider.last_name
-                    })
-                })
-            })
-                .appendTo('#select-filter-item');
+        // MCY - Pilots view their own calendar
+        if (GlobalVariables.user.role_slug == Backend.DB_SLUG_CUSTOMER) {
+			var hasGoogleSync = 'false';
+			var optHtml =
+				'<option value="' + GlobalVariables.user.id + '" type="' + FILTER_TYPE_CUSTOMER + '" '
+				+ 'google-sync="' + hasGoogleSync + '">'
+				+ GlobalVariables.user.display_name
+				+ '</option>';
+			
+				$('#select-filter-item').append(optHtml);
         }
+        else {
+	        if (GlobalVariables.availableProviders.length > 0) {
+	        	/** MCY - removed - menu grouping not used
+	            $('<optgroup/>', {
+	                'label': EALang.providers,
+	                'type': 'providers-group',
+	                'html': GlobalVariables.availableProviders.map(function (availableProvider) {
+	                    var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
+	
+	                    return $('<option/>', {
+	                        'value': availableProvider.id,
+	                        'type': FILTER_TYPE_PROVIDER,
+	                        'google-sync': hasGoogleSync,
+	                        'text': availableProvider.first_name + ' ' + availableProvider.last_name
+	                    })
+	                })
+	            })
+	                .appendTo('#select-filter-item');
+	            MCY - end of remove */
 
+	            // MCY - added - menu without grouping
+	            GlobalVariables.availableProviders.forEach(function (availableProvider) {
+					var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
+
+					$('<option/>', {
+						'value': availableProvider.id,
+						'type': FILTER_TYPE_PROVIDER,
+						'google-sync': hasGoogleSync,
+						'text': availableProvider.first_name + ' ' + availableProvider.last_name
+					})
+						.appendTo('#select-filter-item');
+				})
+	            // MCY - end of changed
+	        }
+	    }
+
+		/** MCY - omit services from the menu
         if (GlobalVariables.availableServices.length > 0) {
             $('<optgroup/>', {
                 'label': EALang.services,
@@ -1556,14 +1628,27 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             })
                 .appendTo('#select-filter-item');
         }
+        MCY - end of removed */
 
         // Check permissions.
+        /** MCY - removed - done for both location and pilot below
         if (GlobalVariables.user.role_slug === Backend.DB_SLUG_PROVIDER) {
             $('#select-filter-item optgroup:eq(0)')
                 .find('option[value="' + GlobalVariables.user.id + '"]')
                 .prop('selected', true);
             $('#select-filter-item').prop('disabled', true);
         }
+        MCY - end of removed */
+		
+        // MCY - added - select location's or pilot's calendar and disable menu
+        if (GlobalVariables.user.role_slug == Backend.DB_SLUG_PROVIDER ||
+			GlobalVariables.user.role_slug == Backend.DB_SLUG_CUSTOMER) {
+        	$('#select-filter-item')
+            	.find('option[value="' + GlobalVariables.user.id + '"]')
+            	.prop('selected', true);
+        	$('#select-filter-item').prop('disabled', true);
+        }
+        // MCY - end of added
 
         if (GlobalVariables.user.role_slug === Backend.DB_SLUG_SECRETARY) {
             // Remove the providers that are not connected to the secretary.
@@ -1579,9 +1664,19 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 }
             });
 
+			// MCY - removed - no option no option groups used
             if (!$('#select-filter-item option[type="provider"]').length) {
                 $('#select-filter-item optgroup[type="providers-group"]').remove();
             }
+			// MCY - end of removed
+            
+            // MCY - added - if appointment hash is provided, select the appropriate provider (location)
+            if (GlobalVariables.editAppointment != null) {
+                $('#select-filter-item')
+                    .find('option[value="' + GlobalVariables.editAppointment.id_users_provider + '"]')
+                    .prop('selected', true);
+            }
+            // MCY - end of added
         }
 
         // Bind the default event handlers.
@@ -1589,6 +1684,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
         $('#select-filter-item').trigger('change');
 
+		/** MCY - removed
         // Display the edit dialog if an appointment hash is provided.
         if (GlobalVariables.editAppointment) {
             var $dialog = $('#manage-appointment');
@@ -1622,6 +1718,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
             $dialog.modal('show');
         }
+        MCY - end of removed */
 
         if (!$('#select-filter-item option').length) {
             $('#calendar-actions button').prop('disabled', true);

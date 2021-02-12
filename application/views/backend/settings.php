@@ -13,6 +13,9 @@
         timeFormat: <?= json_encode($time_format) ?>,
         userSlug: <?= json_encode($role_slug) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        // MCY - added
+        defaultTimezone: <?= json_encode($default_timezone) ?>,
+        // MCY - end of added
         settings: {
             system: <?= json_encode($system_settings) ?>,
             user: <?= json_encode($user_settings) ?>
@@ -475,7 +478,9 @@
                             <label for="calendar-view"><?= lang('calendar') ?> *</label>
                             <select id="calendar-view" class="form-control required">
                                 <option value="default">Default</option>
+                                <!-- MCY - removed
                                 <option value="table">Table</option>
+                                MCY - end of removed -->
                             </select>
                         </div>
 
@@ -498,7 +503,7 @@
         <!-- ABOUT TAB -->
 
         <div class="tab-pane" id="about-app">
-            <h3>Easy!Appointments</h3>
+            <h3>CWALC Scheduler</h3>
 
             <p>
                 <?= lang('about_app_info') ?>
