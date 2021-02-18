@@ -89,6 +89,14 @@ class Backend extends EA_Controller {
             $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
             $view['secretary_providers'] = $secretary['providers'];
         }
+        // MCY - added - need to get providers (locations) for customers (pilots)
+        else if ($this->session->userdata('role_slug') === DB_SLUG_CUSTOMER)
+        {
+            $customer = $this->customers_model->get_row($this->session->userdata('user_id'));
+            // MCY - secretary_providers is not a typo, we use this variable for pilots too
+            $view['secretary_providers'] = $customer['providers'];
+        }
+        // MCY - end of added
         else
         {
             $view['secretary_providers'] = [];

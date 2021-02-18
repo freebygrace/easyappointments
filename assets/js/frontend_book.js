@@ -747,7 +747,7 @@ window.FrontendBook = window.FrontendBook || {};
         
         // MCY - changed - don't display
         return;
-		// MCY - end of changed
+        // MCY - end of changed
 
         var service = GlobalVariables.availableServices.find(function (availableService) {
             return Number(availableService.id) === Number(serviceId);

@@ -355,6 +355,7 @@
         //$('#providers .record-details #provider-timezone').val('UTC');
         $('#providers .record-details #provider-timezone').val(GlobalVariables.defaultTimezone);
         $('#providers .record-details #provider-timezone').prop('disabled', true);
+        $('#providers .record-details #provider-notifications').prop('checked', false);
         // MCY - end of changed
         $('#providers .add-break, .add-working-plan-exception, #reset-working-plan').prop('disabled', true);
         BackendUsers.wp.timepickers(true);

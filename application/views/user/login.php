@@ -56,10 +56,17 @@
 				<div class="alert d-none"></div>
 				<form id="login-form">
 					<div class="form-group">
+                        <!-- MCY - changed
 						<label for="username"><?= lang('username') ?></label>
 						<input type="text" id="username"
 							   placeholder="<?= lang('enter_username_here') ?>"
 							   class="form-control"/>
+                        -->
+						<label for="username"><?= lang('email') ?></label>
+						<input type="text" id="username"
+							   placeholder="<?= lang('enter_email_here') ?>"
+							   class="form-control"/>
+                        <!-- MCY - end of changed -->
 					</div>
 					<div class="form-group">
 						<label for="password"><?= lang('password') ?></label>
@@ -84,7 +91,7 @@
 
 					<div class="mt-4">
 						<small>
-							Powered by
+							CWALC Scheduler - powered by
 							<a href="https://easyappointments.org">Easy!Appointments</a>
 						</small>
 					</div>

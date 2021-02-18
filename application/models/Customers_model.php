@@ -107,13 +107,13 @@ class Customers_model extends EA_Model {
         }
 
         $phone_number_required = $this->db->get_where('settings', ['name' => 'require_phone_number'])->row()->value === '1';
-		// MCY - added
+        // MCY - added
         // Validate 'providers' value data type (must be array)
         if (isset($customer['providers']) && ! is_array($customer['providers']))
         {
             throw new Exception('Customer providers value is not an array.');
         }
-		// MCY - end of added
+        // MCY - end of added
 
         // Validate required fields
         if ( ! isset(
@@ -132,7 +132,7 @@ class Customers_model extends EA_Model {
             throw new Exception('Invalid email address provided: ' . $customer['email']);
         }
     
-    	// MCY - added
+        // MCY - added
         // Check if username exists.
         if (isset($customer['settings']['username']))
         {
@@ -161,7 +161,7 @@ class Customers_model extends EA_Model {
             throw new Exception('The calendar view setting must be either "' . CALENDAR_VIEW_DEFAULT
                 . '" or "' . CALENDAR_VIEW_TABLE . '", given: ' . $customer['settings']['calendar_view']);
         }
-		// MCY - end of added
+        // MCY - end of added
 
         // When inserting a record the email address must be unique.
         $customer_id = isset($customer['id']) ? $customer['id'] : '';
@@ -268,14 +268,14 @@ class Customers_model extends EA_Model {
      */
     protected function insert($customer)
     {
-		// MCY - added
+        // MCY - added
         $this->load->helper('general');
 		
         $providers = $customer['providers'];
         unset($customer['providers']);
         $settings = $customer['settings'];
         unset($customer['settings']);
-		/** MCY - end of added */
+        // MCY - end of added
 
         // Before inserting the customer we need to get the customer's role id
         // from the database and assign it to the new record as a foreign key.
@@ -291,7 +291,7 @@ class Customers_model extends EA_Model {
         {
             throw new Exception('Could not insert customer to the database.');
         }
-		// MCY - changed
+        // MCY - changed
         //return (int)$this->db->insert_id();
 
         $customer['id'] = (int)$this->db->insert_id();
@@ -302,7 +302,7 @@ class Customers_model extends EA_Model {
         $this->save_settings($settings, $customer['id']);
 
         return $customer['id'];
-		// MCY - end of added
+        // MCY - end of changed
     }
 
     /**
@@ -319,7 +319,7 @@ class Customers_model extends EA_Model {
      */
     protected function update($customer)
     {
-		// MCY - added
+        // MCY - added
         $this->load->helper('general');
 
         $providers = $customer['providers'];
@@ -332,7 +332,7 @@ class Customers_model extends EA_Model {
             $salt = $this->db->get_where('user_settings', ['id_users' => $customer['id']])->row()->salt;
             $settings['password'] = hash_password($salt, $settings['password']);
         }
-		// MCY - end of added
+        // MCY - end of added
 
         $this->db->where('id', $customer['id']);
 
@@ -341,10 +341,10 @@ class Customers_model extends EA_Model {
             throw new Exception('Could not update customer to the database.');
         }
     
-    	// MCY - added
+        // MCY - added
         $this->save_providers($providers, $customer['id']);
-		$this->save_settings($settings, $customer['id']);
-		// MCY - end of added
+	$this->save_settings($settings, $customer['id']);
+        // MCY - end of added
 
         return (int)$customer['id'];
     }
@@ -391,7 +391,7 @@ class Customers_model extends EA_Model {
             throw new Exception('Invalid argument provided as $customer_id : ' . $customer_id);
         }
     
-    	// MCY - changed
+        // MCY - changed
         //return $this->db->get_where('users', ['id' => $customer_id])->row_array();
 
         $customer = $this->db->get_where('users', ['id' => $customer_id])->row_array();
@@ -409,7 +409,7 @@ class Customers_model extends EA_Model {
         unset($customer['settings']['id_users'], $customer['settings']['salt']);
 
         return $customer;
-		// MCY - end of changed
+        // MCY - end of changed
     }
 
     /**
@@ -488,13 +488,13 @@ class Customers_model extends EA_Model {
     	// MCY - added
     	else
     	{
-			$this->db->order_by('users.first_name');
+            $this->db->order_by('users.first_name');
     	}
     	// MCY - end of added
 		
-		$this->db->where('id_roles', $role_id);
+        $this->db->where('id_roles', $role_id);
 
-		// MCY - changed
+        // MCY - changed
         //return $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
 
         $batch = $this->db->get('users')->result_array();
@@ -517,7 +517,7 @@ class Customers_model extends EA_Model {
         }
 
         return $batch;
-		// MCY - end of changed
+        // MCY - end of changed
     }
 
     /**
@@ -530,8 +530,8 @@ class Customers_model extends EA_Model {
         return $this->db->get_where('roles', ['slug' => DB_SLUG_CUSTOMER])->row()->id;
     }
 	
-	// MCY - added
-	/**
+    // MCY - added
+    /**
      * Save a the locations where the pilot can volunteer.
      *
      * @param array $providers Contains the location ids where the pilot can volunteer.
@@ -640,5 +640,5 @@ class Customers_model extends EA_Model {
             ['username' => $username, 'id_users <> ' => $user_id])->num_rows();
         return ($num_rows > 0) ? FALSE : TRUE;
     }
-	// MCY - end of added
+    // MCY - end of added
 }

@@ -277,6 +277,7 @@ class Backend_api extends EA_Controller {
                 {
                     throw new Exception('No pilot specified.');                    
                 }
+                // MCY - end of added
             }
 
             // Save appointment changes to the database.
@@ -416,10 +417,10 @@ class Backend_api extends EA_Controller {
                         new Text($this->input->post('delete_reason')));
                 }
 
-				// MCY - changed - use pilot's notification setting
+                // MCY - changed - use pilot's notification setting
                 //$send_customer = $this->settings_model->get_setting('customer_notifications');
                 $send_customer = $this->customers_model->get_setting('notifications', $customer['id']);
-				// MCY - end of changed
+                // MCY - end of changed
 
                 if ((bool)$send_customer === TRUE)
                 {

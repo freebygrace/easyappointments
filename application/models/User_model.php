@@ -88,6 +88,10 @@ class User_model extends EA_Model {
      */
     public function check_login($username, $password)
     {
+        // MCY - added - need unhashed password for later
+        $unhashed_password = $password;
+        // MCY - end of added
+        
         $salt = $this->get_salt($username);
         $password = hash_password($salt, $password);
 
@@ -98,7 +102,23 @@ class User_model extends EA_Model {
 
         if (empty($user_settings))
         {
+            // MCY - changed, try getting user id from email
+            //return NULL;
+            
+            $user = $this->db->get_where('users', ['email' => $username])->row_array();
+            if (!empty($user))
+            {
+                $user_settings = $this->db->get_where('user_settings', [
+                    'id_users' => $user['id']
+                ])->row_array();
+                if (!empty($user_settings))
+                {
+                    return $this->check_login($user_settings['username'], $unhashed_password);
+                }
+            }
+            
             return NULL;
+            // MCY - end of changed
         }
 
         $user = $this->db->get_where('users', ['id' => $user_settings['id_users']])->row_array();
@@ -160,7 +180,7 @@ class User_model extends EA_Model {
         return $user['first_name'] . ' ' . $user['last_name'];
     }
 
-	// MCY - added
+    // MCY - added
     /**
      * Get the given user's phone number (cell number preferred)
      *
@@ -179,9 +199,9 @@ class User_model extends EA_Model {
 
         $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
 		
-		return empty($user['mobile_number']) ? $user['phone_number'] : $user['mobile_number'];
+        return empty($user['mobile_number']) ? $user['phone_number'] : $user['mobile_number'];
     }
-	// MCY - end of added
+    // MCY - end of added
 
     /**
      * If the given arguments correspond to an existing user record, generate a new

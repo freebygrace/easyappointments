@@ -119,17 +119,16 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
             $('.popover').remove();
             
             // MCY - added - pilots use front-end to create appointments
-			if (GlobalVariables.user.role_slug === Backend.DB_SLUG_CUSTOMER) {
-                    window.location.href = GlobalVariables.baseUrl + '/index.php/appointments';
-				return;
-			}
-			
+            if (GlobalVariables.user.role_slug === Backend.DB_SLUG_CUSTOMER) {
+                window.location.href = GlobalVariables.baseUrl + '/index.php/appointments';
+                return;
+            }
+
             // don't allow other types of users to edit appointments in the backend
-			if (GlobalVariables.user.role_slug != Backend.DB_SLUG_ADMIN) {
-				return;
-			}		
-			// MCY - end of added
-			
+            if (GlobalVariables.user.role_slug != Backend.DB_SLUG_ADMIN) {
+                return;
+            }		
+            // MCY - end of added	
 
             BackendCalendarAppointmentsModal.resetAppointmentDialog();
             var $dialog = $('#manage-appointment');

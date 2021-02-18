@@ -30,9 +30,9 @@
         // MCY - end of added
         user: {
             id: <?= $user_id ?>,
-			// MCY - add display name so we can display in calendar drop down when a pilot is logged in
-			'display_name' : <?= json_encode($this->user_model->get_user_display_name($user_id)) ?>,
-			// MCY - end of added
+            // MCY - add display name so we can display in calendar drop down when a pilot is logged in
+            'display_name' : <?= json_encode($this->user_model->get_user_display_name($user_id)) ?>,
+            // MCY - end of added
             email: <?= json_encode($user_email) ?>,
             timezone: <?= json_encode($timezone) ?>,
             role_slug: <?= json_encode($role_slug) ?>,
@@ -71,35 +71,39 @@
                 </button>
             <?php endif ?>
 
-            <?php if ($privileges[PRIV_APPOINTMENTS]['add'] == TRUE): ?>
+            <!-- MCY - changed -->
+            <?php if ($privileges[PRIV_APPOINTMENTS]['add'] == TRUE ||
+                $privileges[PRIV_UNAVAILABLE]['add'] == TRUE): ?>
                 <div class="btn-group">
-                    <button class="btn btn-light" id="insert-appointment">
-                        <i class="fas fa-plus-square mr-2"></i>
-                        <?= lang('appointment') ?>
-                    </button>
-
-                    <!-- MCY - changed -->
-                    <?php if ($privileges[PRIV_UNAVAILABLE]['add'] == TRUE): ?>
-                    <button class="btn btn-light dropdown-toggle" id="insert-dropdown" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#" id="insert-unavailable">
+                    
+                    <?php if ($privileges[PRIV_APPOINTMENTS]['add'] == TRUE): ?>
+                        <button class="btn btn-light" id="insert-appointment">
                             <i class="fas fa-plus-square mr-2"></i>
-                            <?= lang('unavailable') ?>
-                        </a>
-                        <a class="dropdown-item" href="#" id="insert-working-plan-exception"
-                            <?= $this->session->userdata('role_slug') !== 'admin' ? 'hidden' : '' ?>>
-                            <i class="fas fa-plus-square mr-2"></i>
-                            <?= lang('working_plan_exception') ?>
-                        </a>
-                    </div>
+                            <?= lang('appointment') ?>
+                        </button>
                     <?php endif ?>
-                    <!-- MCY - end of changed -->
+
+                    <?php if ($privileges[PRIV_UNAVAILABLE]['add'] == TRUE): ?>
+                        <button class="btn btn-light dropdown-toggle" id="insert-dropdown" data-toggle="dropdown">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" id="insert-unavailable">
+                                <i class="fas fa-plus-square mr-2"></i>
+                                <?= lang('unavailable') ?>
+                            </a>
+                            <a class="dropdown-item" href="#" id="insert-working-plan-exception"
+                                <?= $this->session->userdata('role_slug') !== 'admin' ? 'hidden' : '' ?>>
+                                <i class="fas fa-plus-square mr-2"></i>
+                                <?= lang('working_plan_exception') ?>
+                            </a>
+                        </div>
+                    <?php endif ?>
                 </div>
             <?php endif ?>
+            <!-- MCY - end of changed -->
 
             <button id="reload-appointments" class="btn btn-light"
                     data-tippy-content="<?= lang('reload_appointments_hint') ?>">
@@ -142,7 +146,8 @@
                 <div class="modal-message alert hidden"></div>
 				
                 <!-- MCY - added - secretary can only edit passengers -->
-				<?php $disabled = ($role_slug == DB_SLUG_ADMIN) ? '' : 'disabled' ?>
+                <?php $disabled = ($role_slug == DB_SLUG_ADMIN) ? '' : 'disabled' ?>
+                <!-- MCY - end of added -->
 
                 <form>
                     <fieldset>
@@ -246,8 +251,9 @@
                                 <div class="form-group">
                                     <!-- MCY - changed
                                     <label for="appointment-notes" class="control-label"><?= lang('notes') ?></label>
-                                    MCY - end of changed -->
+                                    -->
                                     <label for="appointment-notes" class="control-label"><?= lang('passengers') ?></label>
+                                    <!-- MCY - end of changed -->
                                     <textarea id="appointment-notes" class="form-control" rows="3"></textarea>
                                 </div>
                             </div>
@@ -293,6 +299,7 @@
                             <?= lang('customer_details_title') ?>
                             <!-- MCY - added - secretary can only view pilot -->
                             <?php if ($role_slug == DB_SLUG_SECRETARY) { echo '<div style="display:none">'; } ?>
+                            <!-- MCY - end of added -->
                             <!-- MCY - removed - not enough fields here to create a pilot
                             <button id="new-customer" class="btn btn-outline-secondary btn-sm" type="button"
                                     data-tippy-content="<?= lang('clear_fields_add_existing_customer_hint') ?>">
@@ -313,6 +320,7 @@
                             <div id="existing-customers-list" style="display: none;"></div>
                             <!-- MCY - added - secretary can only view pilot -->
                             <?php if ($role_slug == DB_SLUG_SECRETARY) { echo '</div>'; } ?>
+                            <!-- MCY - end of added -->
                         </legend>
 
                         <input id="customer-id" type="hidden">
@@ -335,7 +343,7 @@
                                     <input disabled id="last-name" class="required form-control">
                                 </div>
 
-                                <!-- MCY - added - hide extra fields -->
+                                <!-- MCY - added - hide extra fields with disabled attribute -->
                                 <?php { echo '<div style="display:none">'; } ?>
                                 <div class="form-group">
                                     <label for="address" class="control-label">
@@ -350,7 +358,7 @@
                                     </label>
                                     <input disabled id="city" class="form-control">
                                 </div>
-                                <!-- MCY - added - hide extra fields -->
+                                <!-- MCY - added - hide extra fields with disabled attribute -->
                                 <?php { echo '</div>'; } ?>
                             </div>
                             
@@ -374,7 +382,7 @@
                                            class="form-control <?= $require_phone_number === '1' ? 'required' : '' ?>">
                                 </div>
 
-                                <!-- MCY - added - hide extra fields -->
+                                <!-- MCY - added - hide extra fields with disabled attribute -->
                                 <?php { echo '<div style="display:none">'; } ?>
                                 <div class="form-group">
                                     <label for="zip-code" class="control-label">
@@ -389,7 +397,7 @@
                                     </label>
                                     <textarea disabled id="customer-notes" rows="2" class="form-control"></textarea>
                                 </div>
-                                <!-- MCY - added - hide extra fields -->
+                                <!-- MCY - added - hide extra fields with disabled attribute -->
                                 <?php { echo '</div>'; } ?>
                             </div>
                         </div>

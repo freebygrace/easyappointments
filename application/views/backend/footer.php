@@ -31,13 +31,13 @@
             <i class="fas fa-language mr-2"></i>
         	<?= ucfirst(config('language')) ?>
         </span>
-		<!-- MCY - removed
+        <!-- MCY - removed
         |
 
         <a href="<?= site_url('appointments') ?>">
             <?= lang('go_to_booking_page') ?>
         </a>
-		-->
+        MCY - end of removed -->
     </div>
 
     <div id="footer-user-display-name" class="col-12 col-sm-4">

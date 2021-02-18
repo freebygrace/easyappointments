@@ -317,6 +317,7 @@
         //$('#admins .record-details #admin-timezone').val('UTC');
         $('#admins .record-details #admin-timezone').val(GlobalVariables.defaultTimezone);
         $('#admins .record-details #admin-timezone').prop('disabled', true);
+        $('#admins .record-details #admin-notifications').prop('checked', false);
         // MCY - end of changed
         $('#edit-admin, #delete-admin').prop('disabled', true);
 

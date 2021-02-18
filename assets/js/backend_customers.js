@@ -24,14 +24,14 @@ window.BackendCustomers = window.BackendCustomers || {};
 
     'use strict';
 
-	// MCY - added
+    // MCY - added
     /**
      * Minimum Password Length
      *
      * @type {Number}
      */
     exports.MIN_PASSWORD_LENGTH = 7;
-	// MCY - end of added
+    // MCY - end of added
 
     /**
      * The page helper contains methods that implement each record type functionality
@@ -58,49 +58,48 @@ window.BackendCustomers = window.BackendCustomers || {};
 
         helper = new CustomersHelper();
 
-		// MCY - added
-		// Update the list with the all the available providers.
-		var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_providers';
+        // MCY - added
+        // Update the list with the all the available providers.
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_providers';
 
-		var data = {
-			csrfToken: GlobalVariables.csrfToken,
-			key: ''
-		};
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            key: ''
+        };
 
-		$.post(url, data)
-			.done(function (response) {
-				GlobalVariables.providers = response;
+        $.post(url, data).done(function (response) {
+            GlobalVariables.providers = response;
 
-				$('#customer-providers').empty();
+            $('#customer-providers').empty();
 
-				GlobalVariables.providers.forEach(function (provider) {
-					$('<div/>', {
-						'class': 'checkbox',
-						'html': [
-							$('<div/>', {
-								'class': 'checkbox form-check',
-								'html': [
-									$('<input/>', {
-										'class': 'form-check-input',
-										'type': 'checkbox',
-										'data-id': provider.id,
-										'prop': {
-											'disabled': true
-										}
-									}),
-									$('<label/>', {
-										'class': 'form-check-label',
-										'text': provider.first_name + ' ' + provider.last_name,
-										'for': provider.id
-									}),
-								]
-							})
-						]
-					})
-						.appendTo('#customer-providers');
-				});
-			});
-		// MCY - end of added
+            GlobalVariables.providers.forEach(function (provider) {
+                $('<div/>', {
+                    'class': 'checkbox',
+                    'html': [
+                        $('<div/>', {
+                            'class': 'checkbox form-check',
+                            'html': [
+                                $('<input/>', {
+                                    'class': 'form-check-input',
+                                    'type': 'checkbox',
+                                    'data-id': provider.id,
+                                    'prop': {
+                                        'disabled': true
+                                    }
+                                }),
+                                $('<label/>', {
+                                    'class': 'form-check-label',
+                                    'text': provider.first_name + ' ' + provider.last_name,
+                                    'for': provider.id
+                                }),
+                            ]
+                        })
+                    ]
+                })
+                    .appendTo('#customer-providers');
+            });
+        });
+        // MCY - end of added
 		
         helper.resetForm();
         helper.filter('');

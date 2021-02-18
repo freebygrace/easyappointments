@@ -548,12 +548,12 @@ class Secretaries_model extends EA_Model {
         {
             $this->db->order_by($order_by);
         }
-		// MCY - added
-		else
-		{
-			$this->db->order_by('users.first_name');
-		}
-		// MCY - end of added
+        // MCY - added
+        else
+        {
+            $this->db->order_by('users.first_name');
+        }
+        // MCY - end of added
 
         $batch = $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
 

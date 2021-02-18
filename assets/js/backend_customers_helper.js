@@ -90,9 +90,9 @@
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
 
-			// MCY - added
+            // MCY - added
             $('#customer-password, #customer-password-confirm').addClass('required');
-			// MCY - end of added
+            // MCY - end of added
         });
 
         /**
@@ -108,9 +108,9 @@
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
             
-			// MCY - added
+            // MCY - added
             $('#customer-password, #customer-password-confirm').removeClass('required');
-			// MCY - end of added
+            // MCY - end of added
         });
 
         /**
@@ -137,13 +137,13 @@
                 city: $('#city').val(),
                 zip_code: $('#zip-code').val(),
                 notes: $('#notes').val(),
-				// MCY - added
-				settings: {
+                // MCY - added
+                settings: {
                     username: $('#customer-username').val(),
                     notifications: $('#customer-notifications').prop('checked'),
                     calendar_view: $('#customer-calendar-view').val()
-				},
-				// MCY - end of added
+                },
+                // MCY - end of added
 				
                 //timezone: $('#timezone').val(),
                 timezone: $('#customer-timezone').val(),
@@ -158,11 +158,11 @@
                 }
             });   
 
-			// Include password if changed.
+            // Include password if changed.
             if ($('#customer-password').val() !== '') {
                 customer.settings.password = $('#customer-password').val();
             }
-			// MCY - end of added
+            // MCY - end of added
 
             if ($('#customer-id').val()) {
                 customer.id = $('#customer-id').val();
@@ -176,8 +176,31 @@
         });
 
         /**
-		
-		// MCY - added
+         * Event: Delete Customer Button "Click"
+         */
+        $('#customers').on('click', '#delete-customer', function () {
+            var customerId = $('#customer-id').val();
+            var buttons = [
+                {
+                    text: EALang.cancel,
+                    click: function () {
+                        $('#message-box').dialog('close');
+                    }
+                },
+                {
+                    text: EALang.delete,
+                    click: function () {
+                        instance.delete(customerId);
+                        $('#message-box').dialog('close');
+                    }
+                }
+            ];
+
+            GeneralFunctions.displayMessageBox(EALang.delete_customer,
+                EALang.delete_record_prompt, buttons);
+        });
+
+        // MCY - added
         /**
          * Event: Customer Username "Focusout"
          *
@@ -223,7 +246,7 @@
                 }
             }, 'json').fail(GeneralFunctions.ajaxFailureHandler);
         });
-		// MCY - end of added
+        // MCY - end of added
     };
 
     /**
@@ -293,7 +316,7 @@
                 throw new Error(EALang.fields_are_required);
             }
 
-			// MCY - added
+            // MCY - added
             // Validate passwords.
             if ($('#customer-password').val() != $('#customer-password-confirm').val()) {
                 $('#customer-password, #customer-password-confirm').closest('.form-group').addClass('has-error');
@@ -306,7 +329,7 @@
                 throw 'Password must be at least ' + BackendCustomers.MIN_PASSWORD_LENGTH
                 + ' characters long.';
             }
-			// MCY - end of added
+            // MCY - end of added
 
             // Validate email address.
             if (!GeneralFunctions.validateEmail($('#email').val())) {
@@ -315,13 +338,13 @@
             }
 
 			
-			// MCY - added
+            // MCY - added
             // Check if username exists
             if ($('#customer-username').attr('already-exists') == 'true') {
                 $('#customer-username').closest('.form-group').addClass('has-error');
                 throw 'Username already exists.';
             }			
-			// MCY - end of added
+            // MCY - end of added
 
             return true;
         } catch (error) {
@@ -356,13 +379,13 @@
         $('.record-details .has-error').removeClass('has-error');
         $('.record-details #form-message').hide();
 
-		// MCY - added
+        // MCY - added
         $('.record-details #customer-calendar-view').val('default');
         $('.record-details #customer-timezone').val(GlobalVariables.defaultTimezone);
         $('#customer-notifications').prop('checked', true);
         $('#customer-providers input:checkbox').prop('checked', false);
         $('#customer-providers input:checkbox').prop('disabled', true);
-		// MCY - end of added
+        // MCY - end of added
 
         $('#filter-customers button').prop('disabled', false);
         $('#filter-customers .selected').removeClass('selected');
@@ -385,13 +408,13 @@
         $('#zip-code').val(customer.zip_code);
         $('#notes').val(customer.notes);
         // MCY - changed
-//        $('#timezone').val(customer.timezone);
+        //$('#timezone').val(customer.timezone);
         $('#customer-timezone').val(customer.timezone);
         // MCY - end of changed
         $('#language').val(customer.language || 'english');
 
-		// MCY - added
-		$('#customer-username').val(customer.settings.username);
+        // MCY - added
+        $('#customer-username').val(customer.settings.username);
         $('#customer-calendar-view').val(customer.settings.calendar_view);
         $('#customer-notifications').prop('checked', Boolean(Number(customer.settings.notifications)));
 		
@@ -403,7 +426,7 @@
                 }
             });
         });
-		// MCY - end of added
+        // MCY - end of added
 
         $('#customer-appointments').empty();
 

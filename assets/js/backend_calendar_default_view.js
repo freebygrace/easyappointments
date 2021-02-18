@@ -23,8 +23,8 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
     // Constants
     // MCY - added
-	var FILTER_TYPE_CUSTOMER = 'customer';
-	// MCY - end of added
+    var FILTER_TYPE_CUSTOMER = 'customer';
+    // MCY - end of added
     var FILTER_TYPE_PROVIDER = 'provider';
     var FILTER_TYPE_SERVICE = 'service';
 
@@ -357,13 +357,13 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 //&& GlobalVariables.user.privileges.appointments.edit === true)
                 && GlobalVariables.user.privileges.unavailable.edit === true)
                 // MCY - end of changed
-                ? 'mr-2' : 'd-none';
+                    ? 'mr-2' : 'd-none';
             displayDelete = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
                 // MCY - changed
                 //&& GlobalVariables.user.privileges.appointments.delete === true)
                 && GlobalVariables.user.privileges.unavailable.delete === true)
                 // MCY - end of changed
-                ? 'mr-2' : 'd-none'; // Same value at the time.
+                    ? 'mr-2' : 'd-none'; // Same value at the time.
 
             $html = $('<div/>', {
                 'html': [
@@ -610,8 +610,8 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     $('<br/>'),
 
                     $('<strong/>', {
-                    	// MCY - changed
-                    	//'text': EALang.notes
+                        // MCY - changed
+                        //'text': EALang.notes
                         'text': EALang.passengers
                         // MCY - end of changed
                     }),
@@ -1062,27 +1062,27 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     var appointmentEvent = {
                         id: appointment.id,
 
-						// MCY - changed
+                        // MCY - changed
                         //title: appointment.service.name + ' - '
                         //    + appointment.customer.first_name + ' '
                         //    + appointment.customer.last_name,
-	                    title: ((appointment.notes) ? EALang.confirmed : EALang.pending) + ' - '
-						+ appointment.provider.first_name + ' '
-						+ appointment.provider.last_name + ' - '
+                        title: ((appointment.notes) ? EALang.confirmed : EALang.pending) + ' - '
+                            + appointment.provider.first_name + ' '
+                            + appointment.provider.last_name + ' - '
 	                    + appointment.customer.first_name + ' '
                             + appointment.customer.last_name
                             + ((appointment.notes) ?  (' - ' + appointment.notes) : ''),
-	                    // MCY - end of changed
+                        // MCY - end of changed
                         start: moment(appointment.start_datetime),
                         end: moment(appointment.end_datetime),
                         allDay: false,
                         data: appointment, // Store appointment data for later use.
-						// MCY - added Cycling Without Age colors
-						startEditable: false,
-						durationEditable: false,
-						textColor: (appointment.notes) ? 'black' : 'white',
-						backgroundColor: (appointment.notes) ? '#94dac0' : '#ed1c24'
-						// MCY - end of added
+                        // MCY - added Cycling Without Age colors
+                        startEditable: false,
+                        durationEditable: false,
+                        textColor: (appointment.notes) ? 'black' : 'white',
+                        backgroundColor: (appointment.notes) ? '#94dac0' : '#ed1c24'
+                        // MCY - end of added
                     };
 
                     appointmentEvents.push(appointmentEvent);
@@ -1455,16 +1455,16 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 right: 'agendaDay,agendaWeek,month'
             },
 
-			// MCY - added - Display correct date if an appointment hash is provided
-			scrollTime: ((GlobalVariables.editAppointment != null) ? 
-				moment(GlobalVariables.editAppointment.start_datetime).hours().toString().concat(':00') : '8:00'),
-			defaultDate: ((GlobalVariables.editAppointment != null) ? GlobalVariables.editAppointment.start_datetime : undefined),
-			// MCY - end of added
+            // MCY - added - Display correct date if an appointment hash is provided
+            scrollTime: ((GlobalVariables.editAppointment != null) ? 
+                moment(GlobalVariables.editAppointment.start_datetime).hours().toString().concat(':00') : '8:00'),
+            defaultDate: ((GlobalVariables.editAppointment != null) ? GlobalVariables.editAppointment.start_datetime : undefined),
+            // MCY - end of added
 
             // Selectable
             selectable: true,
             
-			// MCY - changed
+            // MCY - changed
             //selectHelper: true,
             selectHelper: false,
             // MCY - end of changed
@@ -1476,7 +1476,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                 $('#insert-appointment').trigger('click');
 
-				/** MCY - remove
+                /** MCY - remove
                 // Preselect service & provider.
                 var service;
 
@@ -1519,7 +1519,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 // Preselect time
                 $('#start-datetime').datepicker('setDate', new Date(start.format('YYYY/MM/DD HH:mm:ss')));
                 $('#end-datetime').datepicker('setDate', new Date(end.format('YYYY/MM/DD HH:mm:ss')));
-				MCY - end of removed */
+                MCY - end of removed */
 
                 return false;
             },
@@ -1568,52 +1568,52 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         // Fill the select list boxes of the page.
         // MCY - Pilots view their own calendar
         if (GlobalVariables.user.role_slug == Backend.DB_SLUG_CUSTOMER) {
-			var hasGoogleSync = 'false';
-			var optHtml =
-				'<option value="' + GlobalVariables.user.id + '" type="' + FILTER_TYPE_CUSTOMER + '" '
-				+ 'google-sync="' + hasGoogleSync + '">'
-				+ GlobalVariables.user.display_name
-				+ '</option>';
-			
-				$('#select-filter-item').append(optHtml);
+            var hasGoogleSync = 'false';
+            var optHtml =
+                '<option value="' + GlobalVariables.user.id + '" type="' + FILTER_TYPE_CUSTOMER + '" '
+                + 'google-sync="' + hasGoogleSync + '">'
+                + GlobalVariables.user.display_name
+                + '</option>';
+
+                $('#select-filter-item').append(optHtml);
         }
         else {
-	        if (GlobalVariables.availableProviders.length > 0) {
-	        	/** MCY - removed - menu grouping not used
-	            $('<optgroup/>', {
-	                'label': EALang.providers,
-	                'type': 'providers-group',
-	                'html': GlobalVariables.availableProviders.map(function (availableProvider) {
-	                    var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
-	
-	                    return $('<option/>', {
-	                        'value': availableProvider.id,
-	                        'type': FILTER_TYPE_PROVIDER,
-	                        'google-sync': hasGoogleSync,
-	                        'text': availableProvider.first_name + ' ' + availableProvider.last_name
-	                    })
-	                })
-	            })
-	                .appendTo('#select-filter-item');
-	            MCY - end of remove */
+            if (GlobalVariables.availableProviders.length > 0) {
+                /** MCY - removed - menu grouping not used
+                $('<optgroup/>', {
+                    'label': EALang.providers,
+                    'type': 'providers-group',
+                    'html': GlobalVariables.availableProviders.map(function (availableProvider) {
+                        var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
 
-	            // MCY - added - menu without grouping
-	            GlobalVariables.availableProviders.forEach(function (availableProvider) {
-					var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
+                        return $('<option/>', {
+                            'value': availableProvider.id,
+                            'type': FILTER_TYPE_PROVIDER,
+                            'google-sync': hasGoogleSync,
+                            'text': availableProvider.first_name + ' ' + availableProvider.last_name
+                        })
+                    })
+                })
+                    .appendTo('#select-filter-item');
+                MCY - end of remove */
 
-					$('<option/>', {
-						'value': availableProvider.id,
-						'type': FILTER_TYPE_PROVIDER,
-						'google-sync': hasGoogleSync,
-						'text': availableProvider.first_name + ' ' + availableProvider.last_name
-					})
-						.appendTo('#select-filter-item');
-				})
-	            // MCY - end of changed
-	        }
-	    }
+                // MCY - added - menu without grouping
+                GlobalVariables.availableProviders.forEach(function (availableProvider) {
+                    var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
 
-		/** MCY - omit services from the menu
+                    $('<option/>', {
+                        'value': availableProvider.id,
+                        'type': FILTER_TYPE_PROVIDER,
+                        'google-sync': hasGoogleSync,
+                        'text': availableProvider.first_name + ' ' + availableProvider.last_name
+                    })
+                        .appendTo('#select-filter-item');
+                })
+                // MCY - end of changed
+            }
+        }
+
+        /** MCY - omit services from the menu
         if (GlobalVariables.availableServices.length > 0) {
             $('<optgroup/>', {
                 'label': EALang.services,
@@ -1642,11 +1642,11 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 		
         // MCY - added - select location's or pilot's calendar and disable menu
         if (GlobalVariables.user.role_slug == Backend.DB_SLUG_PROVIDER ||
-			GlobalVariables.user.role_slug == Backend.DB_SLUG_CUSTOMER) {
-        	$('#select-filter-item')
-            	.find('option[value="' + GlobalVariables.user.id + '"]')
-            	.prop('selected', true);
-        	$('#select-filter-item').prop('disabled', true);
+            GlobalVariables.user.role_slug == Backend.DB_SLUG_CUSTOMER) {
+            $('#select-filter-item')
+            .find('option[value="' + GlobalVariables.user.id + '"]')
+            .prop('selected', true);
+            $('#select-filter-item').prop('disabled', true);
         }
         // MCY - end of added
 
@@ -1664,11 +1664,11 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 }
             });
 
-			// MCY - removed - no option no option groups used
+            // MCY - removed - no option no option groups used
             if (!$('#select-filter-item option[type="provider"]').length) {
                 $('#select-filter-item optgroup[type="providers-group"]').remove();
             }
-			// MCY - end of removed
+            // MCY - end of removed
             
             // MCY - added - if appointment hash is provided, select the appropriate provider (location)
             if (GlobalVariables.editAppointment != null) {
@@ -1684,7 +1684,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
         $('#select-filter-item').trigger('change');
 
-		/** MCY - removed
+        /** MCY - removed
         // Display the edit dialog if an appointment hash is provided.
         if (GlobalVariables.editAppointment) {
             var $dialog = $('#manage-appointment');

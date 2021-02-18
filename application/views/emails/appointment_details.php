@@ -36,12 +36,12 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('timezone') ?></td>
                 <td style="padding: 3px;"><?= $appointment_timezone ?></td>
             </tr>
-			<!-- MCY - added -->
+            <!-- MCY - added -->
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('passengers') ?></td>
                 <td style="padding: 3px;">$appointment_notes</td>
             </tr>
-			<!-- MCY - end of added -->
+            <!-- MCY - end of added -->
         </table>
 
         <h2><?= lang('customer_details_title') ?></h2>
@@ -70,7 +70,7 @@
 
     <div id="footer" style="padding: 10px; text-align: center; margin-top: 10px;
                 border-top: 1px solid #EEE; background: #FAFAFA;">
-        Powered by
+        CWALC Scheduler - powered by
         <a href="https://easyappointments.org" style="text-decoration: none;">Easy!Appointments</a>
         |
         <a href="<?= $company_link ?>" style="text-decoration: none;"><?= $company_name ?></a>

@@ -162,7 +162,7 @@
                         <select id="language" class="form-control required"></select>
                     </div>
 
-					<!-- MCY - removed - duplicated below
+                    <!-- MCY - removed - duplicated below
                     <div class="form-group">
                         <label for="timezone">
                             <?= lang('timezone') ?>
@@ -170,7 +170,7 @@
                         </label>
                         <?= render_timezone_dropdown('id="timezone" class="form-control required"') ?>
                     </div>
-					MCY - end of removed -->
+                    MCY - end of removed -->
 
                     <div class="form-group">
                         <label class="control-label" for="notes">
@@ -182,71 +182,68 @@
                 </div>
 
                 <div class="col-xs-12 col-sm-4">
-					<!-- MCY - added -->
-					<div class="form-group">
-						<label for="customer-username">
-							<?= lang('username') ?>
-							<span class="text-danger">*</span>
-						</label>
-						<input id="customer-username" class="form-control required" maxlength="256">
-					</div>								
+                    <!-- MCY - added -->
+                    <div class="form-group">
+                        <label for="customer-username">
+                            <?= lang('username') ?>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input id="customer-username" class="form-control required" maxlength="256">
+                    </div>								
 
-					<div class="form-group">
-						<label for="customer-password">
-							<?= lang('password') ?>
-							<span class="text-danger">*</span>
-						</label>
-						<input type="password" id="customer-password" class="form-control required"
-							   maxlength="512" autocomplete="new-password">
-					</div>
-					
-					<div class="form-group">
-						<label for="customer-password-confirm">
-							<?= lang('retype_password') ?>
-							<span class="text-danger">*</span>
-						</label>
-						<input type="password" id="customer-password-confirm" class="form-control required"
-							   maxlength="512" autocomplete="new-password">
-					</div>
+                    <div class="form-group">
+                        <label for="customer-password">
+                            <?= lang('password') ?>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" id="customer-password" class="form-control required"
+                            maxlength="512" autocomplete="new-password">
+                    </div>
 
-					<div class="form-group">
-						<label for="customer-calendar-view">
-							<?= lang('calendar') ?>
-							<span class="text-danger">*</span>
-						</label>
-						<select id="customer-calendar-view" class="form-control required">
-							<option value="default">Default</option>
-							<!-- MCY - removed
-							<option value="table">Table</option>
-                            MCY - end of removed -->
-						</select>
-					</div>
+                    <div class="form-group">
+                        <label for="customer-password-confirm">
+                            <?= lang('retype_password') ?>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="password" id="customer-password-confirm" class="form-control required"
+                            maxlength="512" autocomplete="new-password">
+                    </div>
 
-					<div class="form-group">
-						<label for="customer-timezone">
-							<?= lang('timezone') ?>
-							<span class="text-danger">*</span>
-						</label>
-						<?= render_timezone_dropdown('id="customer-timezone" class="form-control required"') ?>
-					</div>
+                    <div class="form-group">
+                        <label for="customer-calendar-view">
+                            <?= lang('calendar') ?>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <select id="customer-calendar-view" class="form-control required">
+                            <option value="default">Default</option>
+                        </select>
+                    </div>
 
-					<br>
-					
-					<div class="custom-control custom-switch">
-						<input type="checkbox" class="custom-control-input" id="customer-notifications">
-						<label class="custom-control-label" for="customer-notifications">
-							<?= lang('receive_notifications') ?>
-						</label>
-					</div>
+                    <div class="form-group">
+                        <label for="customer-timezone">
+                            <?= lang('timezone') ?>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <?= render_timezone_dropdown('id="customer-timezone" class="form-control required"') ?>
+                    </div>
 
-					<br>
+                    <br>
 
-					<h4><?= lang('providers') ?></h4>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="customer-notifications">
+                        <label class="custom-control-label" for="customer-notifications">
+                            <?= lang('receive_notifications') ?>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <h4><?= lang('providers') ?></h4>
                     <div id="customer-providers" class="card card-body bg-light border-light"></div>
-				</div>
-				
-				<div class="col-xs-12 col-sm-4">
-				<!-- MCY - end of added -->					
+                </div>
+
+                <div class="col-xs-12 col-sm-4">
+                <!-- MCY - end of added -->					
                     <h4><?= lang('appointments') ?></h4>
                     <div id="customer-appointments" class="well"></div>
                     <div id="appointment-details" class="well hidden"></div>

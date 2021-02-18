@@ -78,23 +78,23 @@ class Notifications {
                 $provider_message = new Text(lang('appointment_link_description'));
             }
 
-			// MCY - changed - use backend link for pilots
+            // MCY - changed - use backend link for pilots
             //$customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
             $customer_link = new Url(site_url('backend/index/' . $appointment['hash']));
-			// MCY - end of changed
+            // MCY - end of changed
 			
             $provider_link = new Url(site_url('backend/index/' . $appointment['hash']));
 
             $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
 
-			// MCY - changed - use customer's (pilot's) notification setting
+            // MCY - changed - use customer's (pilot's) notification setting
             //$send_customer = filter_var(
             //    $this->CI->settings_model->get_setting('customer_notifications'),
             //    FILTER_VALIDATE_BOOLEAN);
             $send_customer = filter_var(
                 $this->CI->customers_model->get_setting('notifications', $customer['id']),
                 FILTER_VALIDATE_BOOLEAN);
-			// MCY - end of changed
+            // MCY - end of changed
 
             if ($send_customer === TRUE)
             {

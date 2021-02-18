@@ -125,12 +125,12 @@
 
     <button type="button" id="install" class="btn btn-success btn-large">
         <i class="icon-white icon-ok mr-2"></i>
-        Install Easy!Appointments
+        Install CWALC Scheduler
     </button>
 </div>
 
 <footer>
-    Powered by <a href="https://easyappointments.org">Easy!Appointments</a>
+    CWALC Scheduler - powered by <a href="https://easyappointments.org">Easy!Appointments</a>
 </footer>
 
 <script>

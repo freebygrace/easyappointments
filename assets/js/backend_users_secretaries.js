@@ -329,6 +329,7 @@
         //$('#secretaries .record-details #secretary-timezone').val('UTC');
         $('#secretaries .record-details #secretary-timezone').val(GlobalVariables.defaultTimezone);
         $('#secretaries .record-details #secretary-timezone').prop('disabled', true);
+        $('#secretaries .record-details #secretary-notifications').prop('checked', true);
         // MCY - end of changed
         $('#secretaries .add-edit-delete-group').show();
         $('#secretaries .save-cancel-group').hide();

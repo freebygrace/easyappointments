@@ -24,7 +24,7 @@ class Appointments extends EA_Controller {
     {
         parent::__construct();
 
-		// MCY - added - may need to force a login
+        // MCY - added - may need to force a login
         $this->load->library('session');
         // MCY - end of added
         
@@ -68,34 +68,34 @@ class Appointments extends EA_Controller {
                 return;
             }
         
-        	// MCY - added - force login
-        	$this->session->set_userdata('dest_url', site_url(''));
+            // MCY - added - force login
+            $this->session->set_userdata('dest_url', site_url(''));
 
-        	if ( ! $this->_has_privileges(PRIV_APPOINTMENTS))
-        	{
-            	return;
-        	}
-			// MCY - end of added
+            if ( ! $this->_has_privileges(PRIV_APPOINTMENTS))
+            {
+                return;
+            }
+            // MCY - end of added
 		
-			// MCY - added - must be a pilot to book an appointment
-        	if ($this->session->userdata('role_slug') !== DB_SLUG_CUSTOMER)
-			{
-            	redirect('backend/index');
-            	return;
-			}
-			// MCY - end of must be a  pilot
+            // MCY - added - must be a pilot to book an appointment
+            if ($this->session->userdata('role_slug') !== DB_SLUG_CUSTOMER)
+            {
+                redirect('backend/index');
+                return;
+            }
+            // MCY - end of must be a  pilot
 			
-			// MCY - added
-        	$userId = $this->session->userdata('user_id');
-			// MCY - end of added
+            // MCY - added
+            $userId = $this->session->userdata('user_id');
+            // MCY - end of added
 
             $available_services = $this->services_model->get_available_services();
 
-			// MCY - changed - pilots have locations where they can serve
+            // MCY - changed - pilots have locations where they can serve
             // $available_providers = $this->providers_model->get_available_providers();
             $customer_providers = $this->customers_model->get_row($userId)['providers'];
-			$available_providers = $this->providers_model->get_batch("id IN (" . implode(", ", $customer_providers) . ")");
-			// MCY - end of changed
+            $available_providers = $this->providers_model->get_batch("id IN (" . implode(", ", $customer_providers) . ")");
+            // MCY - end of changed
             $company_name = $this->settings_model->get_setting('company_name');
             $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
             $date_format = $this->settings_model->get_setting('date_format');
@@ -212,9 +212,9 @@ class Appointments extends EA_Controller {
                 'display_any_provider' => $display_any_provider,
             ];
 			
-			// MCY - added
-			$this->set_user_data($variables);
-			// MCY - end of added
+            // MCY - added
+            $this->set_user_data($variables);
+            // MCY - end of added
         }
         catch (Exception $exception)
         {
@@ -498,18 +498,13 @@ class Appointments extends EA_Controller {
                 return;
             }
 
-			/** MCY - removed - the customer (pilot) is the logged in user
+            /** MCY - removed - the customer (pilot) is the logged in user
             if ($this->customers_model->exists($customer))
             {
                 $customer['id'] = $this->customers_model->find_record_id($customer);
             }
-        	MCY - end of removed */
+            MCY - end of removed */
         	
-        	// MCY - added - get currently logged in customer
-			$customer = $this->customers_model->get_row($customer['id']);
-			$customer_id = $customer['id'];
-			// MCY - end of added
-
             if (empty($appointment['location']) && ! empty($service['location']))
             {
                 $appointment['location'] = $service['location'];
@@ -517,7 +512,11 @@ class Appointments extends EA_Controller {
 
             // Save customer language (the language which is used to render the booking page).
             $customer['language'] = config('language');
-            $customer_id = $this->customers_model->add($customer);
+            // MCY - changed - the customer (pilot) is the logged in user
+            //$customer_id = $this->customers_model->add($customer);
+            $customer = $this->customers_model->get_row($customer['id']);
+            $customer_id = $customer['id'];
+            // MCY - end of changed
 
             $appointment['id_users_customer'] = $customer_id;
             $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
@@ -721,8 +720,8 @@ class Appointments extends EA_Controller {
         return $provider_list;
     }
 
-	// MCY - added
-	/**
+    // MCY - added
+    /**
      * Check whether current user is logged in and has the required privileges to create an appointment.
      *
      * The appointment page requires different that the user have the privilege for creating appointments.
@@ -766,10 +765,10 @@ class Appointments extends EA_Controller {
 
         return TRUE;
     }
-	// MCY - end of added
-	
-	// MCY - added
-	/**
+    // MCY - end of added
+
+    // MCY - added
+    /**
      * Set the user data in order to be available at the view and js code.
      *
      * @param array $variables Contains the variables.
@@ -788,5 +787,5 @@ class Appointments extends EA_Controller {
         $variables['role_slug'] = $this->session->userdata('role_slug');
         $variables['privileges'] = $this->roles_model->get_privileges($this->session->userdata('role_slug'));
     }
-	// MCY - end of added
+    // MCY - end of added
 }

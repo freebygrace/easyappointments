@@ -65,7 +65,7 @@
 </div>
 
 <footer>
-    Powered by <a href="https://easyappointments.org">Easy!Appointments</a>
+    CWALC Scheduler - powered by <a href="https://easyappointments.org">Easy!Appointments</a>
 </footer>
 
 <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>

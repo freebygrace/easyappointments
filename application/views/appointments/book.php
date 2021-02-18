@@ -29,11 +29,11 @@
             <!-- FRAME TOP BAR -->
 
             <div id="header">
-				<!-- MCY - change
+                <!-- MCY - change
                 <span id="company-name"><?= $company_name ?></span>
-				-->
+                -->
                 <span id="company-name"><?= lang('page_title') ?></span>
-				<!-- MCY - end of change -->
+                <!-- MCY - end of change -->
 
                 <div id="steps">
                     <div id="step-1" class="book-step active-step"
@@ -419,7 +419,7 @@
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
-                        Powered By
+                        CWALC Scheduler - powered By
 
                         <a href="https://easyappointments.org" target="_blank">Easy!Appointments</a>
                     </span>
@@ -470,15 +470,15 @@
         displayAnyProvider: <?= json_encode($display_any_provider) ?>,
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
         // MCY - added
-		user: {
-			id: <?= $user_id ?>,
+        user: {
+            id: <?= $user_id ?>,
             display_name: <?= json_encode($user_display_name) ?>,
             phone_number: <?= json_encode($user_phone_number) ?>,
-			email: <?= json_encode($user_email) ?>,
+            email: <?= json_encode($user_email) ?>,
             timezone: <?= json_encode($user_timezone) ?>,
-			role_slug: <?= json_encode($role_slug) ?>,
+            role_slug: <?= json_encode($role_slug) ?>,
             privileges: <?= json_encode($privileges) ?>,
-		}
+        }
         // MCY - end of added
     };
 
