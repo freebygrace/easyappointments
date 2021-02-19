@@ -91,6 +91,10 @@
                     </button>
                 </div>
             </div>
+            
+            <!-- MCY - added -->
+            <div id="form-message" class="alert" style="display:none;"></div>
+            <!-- MCY - end of added -->
 
             <h3><?= lang('details') ?></h3>
 
@@ -98,7 +102,9 @@
 
             <div class="row">
                 <div class="col-xs-12 col-sm-4" style="margin-left: 0;">
+                    <!-- MCY - deleted
                     <div id="form-message" class="alert" style="display:none;"></div>
+                    MCY - end of deleted -->
 
                     <div class="form-group">
                         <label class="control-label" for="first-name">

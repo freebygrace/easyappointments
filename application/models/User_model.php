@@ -180,30 +180,7 @@ class User_model extends EA_Model {
         return $user['first_name'] . ' ' . $user['last_name'];
     }
 
-    // MCY - added
-    /**
-     * Get the given user's phone number (cell number preferred)
-     *
-     * @param int $user_id The given user record id.
-     *
-     * @return string Returns the user's phone number.
-     *
-     * @throws Exception If $user_id argument is invalid.
-     */
-    public function get_user_phone_number($user_id)
-    {
-        if ( ! is_numeric($user_id))
-        {
-            throw new Exception ('Invalid argument given: ' . $user_id);
-        }
-
-        $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
-		
-        return empty($user['mobile_number']) ? $user['phone_number'] : $user['mobile_number'];
-    }
-    // MCY - end of added
-
-    /**
+   /**
      * If the given arguments correspond to an existing user record, generate a new
      * password and send it with an email.
      *
@@ -251,4 +228,61 @@ class User_model extends EA_Model {
 
         return $row ? $row['timezone'] : NULL;
     }
+    
+    // MCY - added
+    /**
+     * Get the given user's phone number (cell number preferred)
+     *
+     * @param int $user_id The given user record id.
+     *
+     * @return string Returns the user's phone number.
+     *
+     * @throws Exception If $user_id argument is invalid.
+     */
+    public function get_user_phone_number($user_id)
+    {
+        if ( ! is_numeric($user_id))
+        {
+            throw new Exception ('Invalid argument given: ' . $user_id);
+        }
+
+        $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+		
+        return empty($user['mobile_number']) ? $user['phone_number'] : $user['mobile_number'];
+    }
+
+    /**
+     * Validate user's username - must be unique across all users
+     *
+     * @param string $username The user's username.
+     * @param int $user_id The user's record id.
+     *
+     * @return bool Returns the validation result.
+     */
+    public function validate_username($username, $user_id)
+    {
+        $user_id = (isset($user_id)) ? $user_id : '';
+        
+        $num_rows = $this->db->get_where('user_settings',
+            ['username' => $username, 'id_users <> ' => $user_id])->num_rows();
+        return ($num_rows > 0) ? FALSE : TRUE;
+    }
+
+    /**
+     * Validate user's email - must be unique across all users
+     *
+     * @param string email The user's email.
+     * @param int $user_id The user's record id.
+     *
+     * @return bool Returns the validation result.
+     */
+    public function validate_email($email, $user_id)
+    {
+        $user_id = (isset($user_id)) ? $user_id : '';
+        
+        $num_rows = $this->db->get_where('users',
+            ['email' => $email, 'id <> ' => $user_id])->num_rows();
+        return ($num_rows > 0) ? FALSE : TRUE;
+    }
+    // MCY - end of added
 }

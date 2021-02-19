@@ -44,6 +44,10 @@ class Customers_model extends EA_Model {
     {
         parent::__construct();
         $this->load->helper('data_validation');
+        
+        // MCY - added
+        $this->load->model('user_model');
+        // MCY - end of added
     }
 
     /**
@@ -136,8 +140,7 @@ class Customers_model extends EA_Model {
         // Check if username exists.
         if (isset($customer['settings']['username']))
         {
-            $user_id = (isset($customer['id'])) ? $customer['id'] : '';
-            if ( ! $this->validate_username($customer['settings']['username'], $user_id))
+            if ( ! $this->user_model->validate_username($customer['settings']['username'], $customer['id']))
             {
                 throw new Exception ('Username already exists. Please select a different '
                     . 'username for this record.');
@@ -163,6 +166,7 @@ class Customers_model extends EA_Model {
         }
         // MCY - end of added
 
+        /** MCY - removed
         // When inserting a record the email address must be unique.
         $customer_id = isset($customer['id']) ? $customer['id'] : '';
 
@@ -175,12 +179,18 @@ class Customers_model extends EA_Model {
             ->where('users.id !=', $customer_id)
             ->get()
             ->num_rows();
+        MCY - end of removed */
 
-        if ($num_rows > 0)
+        // MCY - changed
+        //if ($num_rows > 0)
+        if ( ! $this->user_model->validate_email($customer['email'], $customer['id']))
         {
-            throw new Exception('Given email address belongs to another customer record. '
+            //throw new Exception('Given email address belongs to another customer record. '
+            //    . 'Please use a different email.');
+            throw new Exception('Given email address belongs to another user. '
                 . 'Please use a different email.');
         }
+        // MCY - end of changed
 
         return TRUE;
     }
@@ -624,21 +634,6 @@ class Customers_model extends EA_Model {
     {
         $this->db->where(['id_users' => $customer_id]);
         return $this->db->update('user_settings', [$setting_name => $value]);
-    }
-
-    /**
-     * Validate Records Username
-     *
-     * @param string $username The customer records username.
-     * @param int $user_id The user record id.
-     *
-     * @return bool Returns the validation result.
-     */
-    public function validate_username($username, $user_id)
-    {
-        $num_rows = $this->db->get_where('user_settings',
-            ['username' => $username, 'id_users <> ' => $user_id])->num_rows();
-        return ($num_rows > 0) ? FALSE : TRUE;
     }
     // MCY - end of added
 }

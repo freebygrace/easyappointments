@@ -51,7 +51,12 @@ class Providers_model extends EA_Model {
     {
         parent::__construct();
         $this->load->helper('data_validation');
-        $this->load->helper('general');
+        $this->load->helper('general'); 
+                
+        // MCY - added
+        $this->load->model('user_model');
+        // MCY - end of added
+
     }
 
     /**
@@ -153,8 +158,11 @@ class Providers_model extends EA_Model {
         // Check if username exists.
         if (isset($provider['settings']['username']))
         {
-            $user_id = (isset($provider['id'])) ? $provider['id'] : '';
-            if ( ! $this->validate_username($provider['settings']['username'], $user_id))
+            // MCY - changed
+            //$user_id = (isset($provider['id'])) ? $provider['id'] : '';
+            //if ( ! $this->validate_username($provider['settings']['username'], $user_id))
+            if ( ! $this->user_model->validate_username($provider['settings']['username'], $provider['id']))
+            // MCY - end of changed
             {
                 throw new Exception ('Username already exists. Please select a different '
                     . 'username for this record.');
@@ -184,6 +192,7 @@ class Providers_model extends EA_Model {
                 . '" or "' . CALENDAR_VIEW_TABLE . '", given: ' . $provider['settings']['calendar_view']);
         }
 
+        /** MCY - removed
         // When inserting a record the email address must be unique.
         $provider_id = (isset($provider['id'])) ? $provider['id'] : '';
 
@@ -196,12 +205,18 @@ class Providers_model extends EA_Model {
             ->where('users.id !=', $provider_id)
             ->get()
             ->num_rows();
+        MCY - end of removed */
 
-        if ($num_rows > 0)
+        // MCY - changed
+        //if ($num_rows > 0)
+        if ( ! $this->user_model->validate_email($provider['email'], $provider['id']))
         {
-            throw new Exception('Given email address belongs to another provider record. '
+            //throw new Exception('Given email address belongs to another provider record. '
+            //    . 'Please use a different email.');
+            throw new Exception('Given email address belongs to another user. '
                 . 'Please use a different email.');
         }
+        // MCY - end of changed
 
         return TRUE;
     }
@@ -214,6 +229,7 @@ class Providers_model extends EA_Model {
      *
      * @return bool Returns the validation result.
      */
+    /** MCY - moved to user_model
     public function validate_username($username, $user_id)
     {
         if ( ! empty($user_id))
@@ -225,6 +241,7 @@ class Providers_model extends EA_Model {
 
         return $this->db->get('user_settings')->num_rows() === 0;
     }
+    MCY - end of removed */
 
     /**
      * Check whether a particular provider record already exists in the database.

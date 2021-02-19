@@ -208,11 +208,13 @@ window.BackendUsers = window.BackendUsers || {};
                 return;
             }
 
-            var userId = $input.parents().eq(2).find('.record-id').val();
+            // MCY - fixed
+            var userId = $input.closest('#details').find('.record-id').val();
 
-            if (!userId) {
+            if (!userId === undefined) {
                 return;
             }
+            // MCY - end of fixed
 
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_validate_username';
 
@@ -222,22 +224,80 @@ window.BackendUsers = window.BackendUsers || {};
                 user_id: userId
             };
 
+            // MCY - fixed - this seems really fragile
             $.post(url, data)
                 .done(function (response) {
-                    if (response === 'false') {
+                    if (response == false) {
                         $input.closest('.form-group').addClass('has-error');
                         $input.attr('already-exists', 'true');
-                        $input.parents().eq(3).find('.form-message').text(EALang.username_already_exists);
-                        $input.parents().eq(3).find('.form-message').show();
+                        $input.closest('.record-details').find('.form-message')
+                            .addClass('alert-danger')
+                            .text(EALang.username_already_exists)
+                            .show();
                     } else {
                         $input.closest('.form-group').removeClass('has-error');
                         $input.attr('already-exists', 'false');
-                        if ($input.parents().eq(3).find('.form-message').text() === EALang.username_already_exists) {
-                            $input.parents().eq(3).find('.form-message').hide();
+                        if ($input.closest('.record-details').find('.form-message').text() === EALang.username_already_exists) {
+                            $input.closest('.record-details').find('.form-message')
+                                .removeClass('alert-danger')
+                                .text('')
+                                .hide();
+                        }
+                    }
+                });
+                // MCY - end of fixed
+        });
+        
+        // MCY - added
+        /**
+         * Event: Admin, Provider, Secretary Email "Focusout"
+         *
+         * When the user leaves the email input field we will need to check if the email
+         * is not taken by another record in the system. Emails must be unique.
+         */
+        $('#admin-email, #provider-email, #secretary-email').focusout(function () {
+            var $input = $(this);
+
+            if ($input.prop('readonly') === true || $input.val() === '') {
+                return;
+            }
+
+            var userId = $input.closest('#details').find('.record-id').val();
+
+            if (!userId === undefined) {
+                return;
+            }
+
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_validate_email';
+
+            var data = {
+                csrfToken: GlobalVariables.csrfToken,
+                email: $input.val(),
+                user_id: userId
+            };
+
+            $.post(url, data)
+                .done(function (response) {
+                    if (response == false) {
+                        $input.closest('.form-group').addClass('has-error');
+                        $input.attr('already-exists', 'true');
+                        $input.closest('.record-details').find('.form-message')
+                            .addClass('alert-danger')
+                            .text(EALang.email_already_exists)
+                            .show();
+                    } else {
+                        $input.closest('.form-group').removeClass('has-error');
+                        $input.attr('already-exists', 'false');
+                        if ($input.closest('.record-details').find('.form-message').text() === EALang.email_already_exists) {
+                            $input.closest('.record-details').find('.form-message')
+                                .removeClass('alert-danger')
+                                .text('')
+                                .hide();
                         }
                     }
                 });
         });
+        // MCY - end of added  
     }
 
 })(window.BackendUsers);

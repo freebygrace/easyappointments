@@ -43,6 +43,10 @@ class Secretaries_model extends EA_Model {
         parent::__construct();
         $this->load->helper('general');
         $this->load->helper('data_validation');
+               
+        // MCY - added
+        $this->load->model('user_model');
+        // MCY - end of added
     }
 
     /**
@@ -122,8 +126,11 @@ class Secretaries_model extends EA_Model {
         // Check if username exists.
         if (isset($secretary['settings']['username']))
         {
-            $user_id = (isset($secretary['id'])) ? $secretary['id'] : '';
-            if ( ! $this->validate_username($secretary['settings']['username'], $user_id))
+            // MCY - changed
+            //$user_id = (isset($secretary['id'])) ? $secretary['id'] : '';
+            //if ( ! $this->validate_username($secretary['settings']['username'], $user_id))
+            if ( ! $this->user_model->validate_username($secretary['settings']['username'], $secretary['id']))
+            // MCY - end of changed
             {
                 throw new Exception ('Username already exists. Please select a different '
                     . 'username for this record.');
@@ -153,6 +160,7 @@ class Secretaries_model extends EA_Model {
                 . '" or "' . CALENDAR_VIEW_TABLE . '", given: ' . $secretary['settings']['calendar_view']);
         }
 
+        /** MCY - removed
         // When inserting a record the email address must be unique.
         $secretary_id = (isset($secretary['id'])) ? $secretary['id'] : '';
 
@@ -165,12 +173,18 @@ class Secretaries_model extends EA_Model {
             ->where('users.id !=', $secretary_id)
             ->get()
             ->num_rows();
+        MCY - end of removed */
 
-        if ($num_rows > 0)
+        // MCY - changed
+        //if ($num_rows > 0)
+        if ( ! $this->user_model->validate_email($secretary['email'], $secretary['id']))
         {
-            throw new Exception('Given email address belongs to another secretary record. '
+            //throw new Exception('Given email address belongs to another secretary record. '
+            //    . 'Please use a different email.');
+            throw new Exception('Given email address belongs to another user. '
                 . 'Please use a different email.');
         }
+        // MCY - end of changed
 
         return TRUE;
     }
@@ -183,6 +197,7 @@ class Secretaries_model extends EA_Model {
      *
      * @return bool Returns the validation result.
      */
+    /** MCY - removed - moved to user_model
     public function validate_username($username, $user_id)
     {
         if ( ! empty($user_id))
@@ -194,6 +209,7 @@ class Secretaries_model extends EA_Model {
 
         return $this->db->get('user_settings')->num_rows() === 0;
     }
+    MCY - end of removed */
 
     /**
      * Check whether a particular secretary record exists in the database.

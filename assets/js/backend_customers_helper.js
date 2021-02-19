@@ -214,9 +214,9 @@
                 return;
             }
 
-            var userId = $input.parents().eq(2).find('.record-id').val();
+            var userId = $('#customer-id').val();
 
-            if (userId == undefined) {
+            if (userId === undefined) {
                 return;
             }
 
@@ -227,24 +227,76 @@
                 user_id: userId
             };
 
-            $.post(postUrl, postData, function (response) {
-                if (!GeneralFunctions.handleAjaxExceptions(response)) {
-                    return;
-                }
-
-                if (response == false) {
-                    $input.closest('.form-group').addClass('has-error');
-                    $input.attr('already-exists', 'true');
-                    $input.parents().eq(3).find('.form-message').text(EALang.username_already_exists);
-                    $input.parents().eq(3).find('.form-message').show();
-                } else {
-                    $input.closest('.form-group').removeClass('has-error');
-                    $input.attr('already-exists', 'false');
-                    if ($input.parents().eq(3).find('.form-message').text() == EALang.username_already_exists) {
-                        $input.parents().eq(3).find('.form-message').hide();
+            $.post(postUrl, postData)
+                .done(function (response) {
+                    if (response == false) {
+                        $input.closest('.form-group').addClass('has-error');
+                        $input.attr('already-exists', 'true');
+                        $('#form-message')
+                            .addClass('alert-danger')
+                            .text(EALang.username_already_exists)
+                            .show();
+                    } else {
+                        $input.closest('.form-group').removeClass('has-error');
+                        $input.attr('already-exists', 'false');
+                        if ($('#form-message').text() === EALang.username_already_exists) {
+                            $('#form-message')
+                                .removeClass('alert-danger')
+                                .text('')
+                                .hide();
+                        }
                     }
-                }
-            }, 'json').fail(GeneralFunctions.ajaxFailureHandler);
+                })
+                .fail(GeneralFunctions.ajaxFailureHandler);
+        });
+
+         /**
+         * Event: Customer Email "Focusout"
+         *
+         * When the user leaves the email input field we will need to check if the email
+         * is not taken by another record in the system. Emails must be unique.
+         */
+        $('#email').focusout(function () {
+            var $input = $(this);
+
+            if ($input.prop('readonly') == true || $input.val() == '') {
+                return;
+            }
+
+            var userId = $('#customer-id').val();
+
+            if (userId == undefined) {
+                return;
+            }
+
+            var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_validate_email';
+            var postData = {
+                csrfToken: GlobalVariables.csrfToken,
+                email: $input.val(),
+                user_id: userId
+            };
+
+            $.post(postUrl, postData)
+                .done(function (response) {
+                    if (response == false) {
+                        $input.closest('.form-group').addClass('has-error');
+                        $input.attr('already-exists', 'true');
+                        $('#form-message')
+                            .addClass('alert-danger')
+                            .text(EALang.email_already_exists)
+                            .show();
+                    } else {
+                        $input.closest('.form-group').removeClass('has-error');
+                        $input.attr('already-exists', 'false');
+                        if ($('#form-message').text() === EALang.email_already_exists) {
+                            $('#form-message')
+                                .removeClass('alert-danger')
+                                .text('')
+                                .hide();
+                        }
+                    }
+                })
+                .fail(GeneralFunctions.ajaxFailureHandler);
         });
         // MCY - end of added
     };
@@ -320,14 +372,14 @@
             // Validate passwords.
             if ($('#customer-password').val() != $('#customer-password-confirm').val()) {
                 $('#customer-password, #customer-password-confirm').closest('.form-group').addClass('has-error');
-                throw 'Passwords mismatch!';
+                throw new Error('Passwords mismatch!');
             }
 
             if ($('#customer-password').val().length < BackendCustomers.MIN_PASSWORD_LENGTH
                 && $('#customer-password').val() != '') {
                 $('#customer-password, #customer-password-confirm').closest('.form-group').addClass('has-error');
-                throw 'Password must be at least ' + BackendCustomers.MIN_PASSWORD_LENGTH
-                + ' characters long.';
+                throw new Error('Password must be at least ' + BackendCustomers.MIN_PASSWORD_LENGTH
+                    + ' characters long.');
             }
             // MCY - end of added
 
@@ -336,13 +388,12 @@
                 $('#email').closest('.form-group').addClass('has-error');
                 throw new Error(EALang.invalid_email);
             }
-
 			
             // MCY - added
             // Check if username exists
             if ($('#customer-username').attr('already-exists') == 'true') {
                 $('#customer-username').closest('.form-group').addClass('has-error');
-                throw 'Username already exists.';
+                throw new Error('Username already exists.');
             }			
             // MCY - end of added
 

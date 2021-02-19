@@ -1517,7 +1517,39 @@ class Backend_api extends EA_Controller {
         {
             // We will only use the function in the admins_model because it is sufficient for the rest user types for
             // now (providers, secretaries).
-            $is_valid = $this->admins_model->validate_username($this->input->post('username'),
+            // MCY - changed
+            //$is_valid = $this->admins_model->validate_username($this->input->post('username'),
+            //    $this->input->post('user_id'));
+            $is_valid = $this->user_model->validate_username($this->input->post('username'),
+                $this->input->post('user_id'));
+            // MCY - end of changed
+
+            $response = $is_valid;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    // MCY - added
+    /**
+     * This method checks whether the email already exists in the database.
+     */
+    public function ajax_validate_email()
+    {
+        try
+        {
+            $is_valid = $this->user_model->validate_email($this->input->post('email'),
                 $this->input->post('user_id'));
 
             $response = $is_valid;
@@ -1536,6 +1568,7 @@ class Backend_api extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
+    // MCY - end of added
 
     /**
      * Change system language for current user.

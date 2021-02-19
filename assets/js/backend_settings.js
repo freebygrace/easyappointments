@@ -215,7 +215,9 @@ window.BackendSettings = window.BackendSettings || {};
 
             $.post(url, data)
                 .done(function (response) {
-                    if (response === 'false') {
+                    // MCY - fixed
+                    if (response == false) {
+                    // MCY - end of fixed
                         $input.closest('.form-group').addClass('has-error');
                         Backend.displayNotification(EALang.username_already_exists);
                         $input.attr('already-exists', 'true');
@@ -226,6 +228,42 @@ window.BackendSettings = window.BackendSettings || {};
                 });
         });
 
+        // MCY - added
+        /**
+         * Event: Email "Focusout"
+         *
+         * When the user leaves the email input field we will need to check if the email
+         * is not taken by another record in the system. Emails must be unique.
+         */
+        $('#email').focusout(function () {
+            var $input = $(this);
+
+            if ($input.prop('readonly') === true || $input.val() === '') {
+                return;
+            }
+
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_validate_email';
+
+            var data = {
+                csrfToken: GlobalVariables.csrfToken,
+                email: $input.val(),
+                user_id: $input.parents().eq(2).find('#user-id').val()
+            };
+
+            $.post(url, data)
+                .done(function (response) {
+                    if (response == false) {
+                        $input.closest('.form-group').addClass('has-error');
+                        Backend.displayNotification(EALang.email_already_exists);
+                        $input.attr('already-exists', 'true');
+                    } else {
+                        $input.closest('.form-group').removeClass('has-error');
+                        $input.attr('already-exists', 'false');
+                    }
+                });
+        });
+        // MCY - end of added
+        
         /**
          * Event: Apply Global Working Plan
          */

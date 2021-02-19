@@ -343,4 +343,5 @@ $lang['ride_waiting_for_passengers'] = 'A ride is waiting for passengers.';
 $lang['click_link_to_add_passengers'] = 'Click the link below to add passengers or cancel.';
 $lang['passengers'] = 'Passengers';
 $lang['enter_passenger_names'] = 'Enter passenger name(s) to confirm the ride booking';
+$lang['email_already_exists'] = 'Email already exists.';
 // MCY - end of added

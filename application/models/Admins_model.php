@@ -25,6 +25,10 @@ class Admins_model extends EA_Model {
 
         $this->load->helper('general');
         $this->load->helper('data_validation');
+        
+        // MCY - added
+        $this->load->model('user_model');
+        // MCY - end of added
     }
 
     /**
@@ -98,8 +102,10 @@ class Admins_model extends EA_Model {
         // Check if username exists.
         if (isset($admin['settings']['username']))
         {
-            $user_id = (isset($admin['id'])) ? $admin['id'] : '';
-            if ( ! $this->validate_username($admin['settings']['username'], $user_id))
+            // MCY - changed
+            //$user_id = (isset($admin['id'])) ? $admin['id'] : '';
+            //if ( ! $this->validate_username($admin['settings']['username'], $user_id))
+            if ( ! $this->user_model->validate_username($admin['settings']['username'], $admin['id']))
             {
                 throw new Exception ('Username already exists. Please select a different '
                     . 'username for this record.');
@@ -129,6 +135,7 @@ class Admins_model extends EA_Model {
                 . '" or "' . CALENDAR_VIEW_TABLE . '", given: ' . $admin['settings']['calendar_view']);
         }
 
+        /** MCY - removed
         // When inserting a record the email address must be unique.
         $admin_id = isset($admin['id']) ? $admin['id'] : '';
 
@@ -141,12 +148,19 @@ class Admins_model extends EA_Model {
             ->where('users.id !=', $admin_id)
             ->get()
             ->num_rows();
-
-        if ($num_rows > 0)
+        MCY - end of removed */
+        
+        // MCY - changed
+        //if ($num_rows > 0)
+        if ( ! $this->user_model->validate_email($admin['email'], $admin['id']))
+        // MCY - end of added
         {
-            throw new Exception('Given email address belongs to another admin record. '
+            //throw new Exception('Given email address belongs to another admin record. '
+            //    . 'Please use a different email.');
+            throw new Exception('Given email address belongs to another user. '
                 . 'Please use a different email.');
         }
+        // MCY - end of changed
 
         return TRUE; // Operation completed successfully.
     }
@@ -159,6 +173,7 @@ class Admins_model extends EA_Model {
      *
      * @return bool Returns the validation result.
      */
+    /** MCY - removed - moved to user_model
     public function validate_username($username, $user_id)
     {
         if ( ! empty($user_id))
@@ -170,7 +185,8 @@ class Admins_model extends EA_Model {
 
         return $this->db->get('user_settings')->num_rows() === 0;
     }
-
+    MCY - end of removed */
+    
     /**
      * Check whether a particular admin record exists in the database.
      *
