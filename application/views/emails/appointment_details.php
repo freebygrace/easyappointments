@@ -32,14 +32,16 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('end') ?></td>
                 <td style="padding: 3px;"><?= $appointment_end_date ?></td>
             </tr>
+            <!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('timezone') ?></td>
                 <td style="padding: 3px;"><?= $appointment_timezone ?></td>
             </tr>
+            MCY - end of removed -->
             <!-- MCY - added -->
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('passengers') ?></td>
-                <td style="padding: 3px;">$appointment_notes</td>
+                <td style="padding: 3px;"><?= $appointment_notes ?></td>
             </tr>
             <!-- MCY - end of added -->
         </table>
@@ -58,10 +60,12 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('phone_number') ?></td>
                 <td style="padding: 3px;"><?= $customer_phone ?></td>
             </tr>
+            <!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
                 <td style="padding: 3px;"><?= $customer_address ?></td>
             </tr>
+            MCY - end of removed -->
         </table>
 
         <h2><?= lang('appointment_link_title') ?></h2>

@@ -37,7 +37,11 @@
                     </strong>
                 </p>
 
+                <!-- MCY - changed
                 <a href="<?= site_url() ?>" class="btn btn-success btn-large">
+                -->
+                <a href=<?= $appointment_link ?> class="btn btn-success btn-large">
+                <!-- MCY - end of changed -->
                     <i class="fas fa-calendar-alt"></i>
                     <?= lang('go_to_booking_page') ?>
                 </a>
@@ -81,6 +85,9 @@
     var GlobalVariables = {
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
         appointmentData: <?= json_encode($appointment_data) ?>,
+        // MCY - added
+        appointmentLink: <?= json_encode($appointment_link) ?>,
+        // MCY - end of added
         providerData: <?= json_encode($provider_data) ?>,
         customerData: <?= json_encode($customer_data) ?>,
         serviceData: <?= json_encode($service_data) ?>,

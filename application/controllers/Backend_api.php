@@ -375,7 +375,15 @@ class Backend_api extends EA_Controller {
 
             // Delete appointment record from the database.
             $this->appointments_model->delete($this->input->post('appointment_id'));
+            
+            // MCY - added, replaces buggy code below
+            $this->synchronization->sync_appointment_deleted($appointment, $provider);
+            $this->notifications->notify_appointment_deleted($appointment, $service, $provider, $customer, $settings);
 
+            $response = AJAX_SUCCESS;
+            // MCY - end of added
+
+            /** MCY - removed
             // Sync removal with Google Calendar.
             if ($appointment['id_google_calendar'] != NULL)
             {
@@ -480,6 +488,7 @@ class Backend_api extends EA_Controller {
             {
                 $response = ['warnings' => $warnings];
             }
+            MCY - end of removed */
         }
         catch (Exception $exception)
         {

@@ -65,17 +65,39 @@ class Notifications {
 
             if ($manage_mode)
             {
-                $customer_title = new Text(lang('appointment_changes_saved'));
-                $customer_message = new Text('');
-                $provider_title = new Text(lang('appointment_details_changed'));
-                $provider_message = new Text('');
+                // MCY - changed
+                //$customer_title = new Text(lang('appointment_changes_saved'));
+                //$customer_message = new Text('');
+                //$provider_title = new Text(lang('appointment_details_changed'));
+                //$provider_message = new Text('');
+                if ($this->CI->appointments_model->is_accepted($appointment))
+                {
+                    $customer_title = new Text(lang('your_ride_confirmed'));
+                    $customer_message = new Text(lang('please_arrive_early'));
+                    $provider_title = new Text(lang('thank_you_for_confirming_ride'));
+                    $provider_message = new Text(lang('ensure_passengers_ready'));
+                }
+                else
+                {
+                    $customer_title = new Text(lang('waiting_for_passengers'));
+                    $customer_message = new Text(lang('receive_email_when_confirmed'));
+                    $provider_title = new Text(lang('ride_waiting_for_passengers'));
+                    $provider_message = new Text(lang('click_link_to_add_passengers'));
+                }
+                // MCY - end of changed
             }
             else
             {
-                $customer_title = new Text(lang('appointment_booked'));
-                $customer_message = new Text(lang('thank_you_for_appointment'));
-                $provider_title = new Text(lang('appointment_added_to_your_plan'));
-                $provider_message = new Text(lang('appointment_link_description'));
+                // MCY - changed
+                //$customer_title = new Text(lang('appointment_booked'));
+                //$customer_message = new Text(lang('thank_you_for_appointment'));
+                //$provider_title = new Text(lang('appointment_added_to_your_plan'));
+                //$provider_message = new Text(lang('appointment_link_description'));
+                $customer_title = new Text(lang('waiting_for_passengers'));
+                $customer_message = new Text(lang('receive_email_when_confirmed'));
+                $provider_title = new Text(lang('ride_waiting_for_passengers'));
+                $provider_message = new Text(lang('click_link_to_add_passengers'));
+                // MCY - end of changed
             }
 
             // MCY - changed - use backend link for pilots
@@ -139,7 +161,10 @@ class Notifications {
                     continue;
                 }
 
-                if (in_array($provider['id'], $secretary['providers']))
+                // MCY - fixed
+                //if (in_array($provider['id'], $secretary['providers']))
+                if (!in_array($provider['id'], $secretary['providers']))
+                // MCY - end of fixed
                 {
                     continue;
                 }
@@ -177,20 +202,35 @@ class Notifications {
 
             if ($send_provider === TRUE)
             {
+                // MCY - fixed
+                //$email->send_delete_appointment($appointment, $provider,
+                //    $service, $customer, $settings, new Email($provider['email']),
+                //    new Text($this->CI->input->post('cancel_reason')));
                 $email->send_delete_appointment($appointment, $provider,
                     $service, $customer, $settings, new Email($provider['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    new Text($this->CI->input->post('delete_reason')));
+                // MCY - end of fixed
             }
 
+            // MCY - changed - use customer's (pilot's) notification setting
+            //$send_customer = filter_var(
+            //    $this->CI->settings_model->get_setting('customer_notifications'),
+            //    FILTER_VALIDATE_BOOLEAN);
             $send_customer = filter_var(
-                $this->CI->settings_model->get_setting('customer_notifications'),
+                $this->CI->customers_model->get_setting('notifications', $customer['id']),
                 FILTER_VALIDATE_BOOLEAN);
+            // MCY - end of changed
 
             if ($send_customer === TRUE)
             {
+                // MCY - fixed
+                //$email->send_delete_appointment($appointment, $provider,
+                //    $service, $customer, $settings, new Email($customer['email']),
+                //    new Text($this->CI->input->post('cancel_reason')));
                 $email->send_delete_appointment($appointment, $provider,
                     $service, $customer, $settings, new Email($customer['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    new Text($this->CI->input->post('delete_reason')));
+                // MCY - end of fixed
             }
 
             // Notify admins
@@ -198,14 +238,22 @@ class Notifications {
 
             foreach ($admins as $admin)
             {
-                if ( ! $admin['settings']['notifications'] === '0')
+                // MCY - fixed
+                //if ( ! $admin['settings']['notifications'] === '0')
+                if ($admin['settings']['notifications'] === '0')
+                // MCY - end of fixed
                 {
                     continue;
                 }
 
+                // MCY - fixed
+                //$email->send_delete_appointment($appointment, $provider,
+                //    $service, $customer, $settings, new Email($admin['email']),
+                //    new Text($this->CI->input->post('cancel_reason')));
                 $email->send_delete_appointment($appointment, $provider,
                     $service, $customer, $settings, new Email($admin['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    new Text($this->CI->input->post('delete_reason')));
+                // MCY - end of fixed
             }
 
             // Notify secretaries
@@ -213,19 +261,30 @@ class Notifications {
 
             foreach ($secretaries as $secretary)
             {
-                if ( ! $secretary['settings']['notifications'] === '0')
+                // MCY - fixed
+                //if ( ! $secretary['settings']['notifications'] === '0')
+                if ($secretary['settings']['notifications'] === '0')
+                // MCY - end of fixed
                 {
                     continue;
                 }
 
-                if (in_array($provider['id'], $secretary['providers']))
+                // MCY - fixed
+                //if (in_array($provider['id'], $secretary['providers']))
+                if (!in_array($provider['id'], $secretary['providers']))
+                // MCY - end of fixed
                 {
                     continue;
                 }
 
+                // MCY - fixed
+                //$email->send_delete_appointment($appointment, $provider,
+                //    $service, $customer, $settings, new Email($secretary['email']),
+                //    new Text($this->CI->input->post('cancel_reason')));
                 $email->send_delete_appointment($appointment, $provider,
                     $service, $customer, $settings, new Email($secretary['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    new Text($this->CI->input->post('delete_reason')));
+                // MCY - end of fixed
             }
         }
         catch (Exception $exception)

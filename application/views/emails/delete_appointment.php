@@ -16,7 +16,6 @@
 
         <h2><?= lang('appointment_details_title') ?></h2>
         <table id="appointment-details">
-            <!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('service') ?></td>
                 <td style="padding: 3px;"><?= $appointment_service ?></td>
@@ -29,6 +28,7 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('start') ?></td>
                 <td style="padding: 3px;"><?= $appointment_date ?></td>
             </tr>
+            <!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('duration') ?></td>
                 <td style="padding: 3px;"><?= $appointment_duration ?></td>
@@ -38,12 +38,6 @@
                 <td style="padding: 3px;"><?= $appointment_timezone ?></td>
             </tr>
             MCY - end of removed -->
-            <!-- MCY - added -->
-            <tr>
-                <td class="label" style="padding: 3px;font-weight: bold;">Passengers</td>
-                <td style="padding: 3px;">$appointment_notes</td>
-            </tr>
-            <!-- MCY - end of added -->
         </table>
 
         <h2><?= lang('customer_details_title') ?></h2>
@@ -60,10 +54,12 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('phone_number') ?></td>
                 <td style="padding: 3px;"><?= $customer_phone ?></td>
             </tr>
+            <!-- MCY - removed
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
                 <td style="padding: 3px;"><?= $customer_address ?></td>
             </tr>
+            MCY - end of removed -->
         </table>
 
         <h2><?= lang('reason') ?></h2>

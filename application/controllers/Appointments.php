@@ -306,6 +306,10 @@ class Appointments extends EA_Controller {
 
         $appointment = $appointments[0];
         unset($appointment['notes']);
+        
+        // MCY - added
+        $appointment_link = site_url('backend/index/' . $appointment['hash']);
+        // MCY - end of added
 
         $customer = $this->customers_model->get_row($appointment['id_users_customer']);
 
@@ -320,6 +324,9 @@ class Appointments extends EA_Controller {
 
         $view = [
             'appointment_data' => $appointment,
+            // MCY - added
+            'appointment_link' => $appointment_link,
+            // MCY - end of added
             'provider_data' => [
                 'id' => $provider['id'],
                 'first_name' => $provider['first_name'],

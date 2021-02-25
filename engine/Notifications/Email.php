@@ -144,6 +144,9 @@ class Email {
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
             'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
+            // MCY - added
+            'appointment_notes' => $appointment['notes'],
+            // MCY - end of added
             'appointment_link' => $appointment_link_address->get(),
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
@@ -158,6 +161,9 @@ class Email {
         $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipient_email->get());
         $mailer->Subject = $title->get();
+        // MCY - added
+        $mailer->Subject .= ' - ' . $appointment_start->format($date_format . ' ' . $time_format);
+        // MCY - end of added
         $mailer->Body = $html;
         $mailer->addStringAttachment($ics_stream->get(), 'invitation.ics');
 
@@ -260,6 +266,9 @@ class Email {
         $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipient_email->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('appointment_cancelled_title');
+        // MCY - added
+        $mailer->Subject .= ' - ' . $appointment_start->format($date_format . ' ' . $time_format);
+        // MCY - end of added
         $mailer->Body = $html;
 
         if ( ! $mailer->Send())
